@@ -208,7 +208,7 @@ public class Main {
 
         if (Log.instance(context).nerrors == 0) {
             Writer os = (outFile == null ? new OutputStreamWriter(System.out) : new FileWriter(outFile));
-            os.write(buf.toString());
+            os.write(buf.toString().replace("this", "_this"));
             os.close();
         } else {
             System.exit(1);

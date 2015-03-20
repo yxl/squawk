@@ -1105,7 +1105,7 @@ static Address         Isolate_getClassStateForInterpreter_L(Address, Address);
             assumeInterp(inCode($mth));
             checkReferenceSlots();
             downPushAddress(ip);
-            ip = $mth;
+            ip = (ByteAddress)$mth;
         }
 
         /**
@@ -1210,10 +1210,10 @@ static Address         Isolate_getClassStateForInterpreter_L(Address, Address);
              * Switch to the new context.
              */
             setStack(newStack);
-            fp = getObject(ss, SC_lastFP);
+            fp = (UWordAddress)getObject(ss, SC_lastFP);
             if (fp == null) {   /* New thread                   */
-                fp = null;      /* The return FP should be zero */
-                ip = null;      /* The return IP should be zero */
+                fp = (UWordAddress)null;      /* The return FP should be zero */
+                ip = (ByteAddress)null;      /* The return IP should be zero */
                 sp = &ss[getArrayLength(ss)];
 /*if[REVERSE_PARAMETERS]*/
                 call(com_sun_squawk_VM_callRun);
@@ -3484,7 +3484,7 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
 #define checkNativeCall(_ptr_) fatalInterpreterError("checkNativeCall")
 #define endCheckNativeCall()
 #else
-#define checkNativeCall(_ptr_) nativeFuncPtr = _ptr_
+#define checkNativeCall(_ptr_) nativeFuncPtr = (void*)_ptr_
 #define endCheckNativeCall() nativeFuncPtr = NULL
 #endif
 
@@ -4114,10 +4114,10 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
                     int i2 = popInt();
                     int i1 = popInt();
                     Address address = popAddress();
-                    funcPtr10 fptr = (funcPtr10)address;
+                    void* fptr = (void*)address;
                     Address te = popAddress();
                     Address result;
-                    result = runBlockingFunctionOn(te, fptr, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10);
+                    result = runBlockingFunctionOn((TaskExecutor*)te, fptr, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10);
                     pushAddress(result);
                     break;
                 }

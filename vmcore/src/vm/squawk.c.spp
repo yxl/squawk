@@ -1861,8 +1861,8 @@ Address Squawk_setup(int argc, char *argv[]) {
     /*
      * Make ROM and NVM be read-only
      */
-    sysToggleMemoryProtection(com_sun_squawk_GC_nvmStart, com_sun_squawk_GC_nvmEnd, true);
-    sysToggleMemoryProtection(com_sun_squawk_VM_romStart, com_sun_squawk_VM_romEnd, true);
+    sysToggleMemoryProtection((char*)com_sun_squawk_GC_nvmStart, (char*)com_sun_squawk_GC_nvmEnd, true);
+    sysToggleMemoryProtection((char*)com_sun_squawk_VM_romStart, (char*)com_sun_squawk_VM_romEnd, true);
 
     initMethods();
 
@@ -2269,7 +2269,7 @@ int main(int argc, char *argv[]) {
  */
 static Address lookupKlass(int cid) {
     Address classes;
-    Address class;
+    Address _class;
     assume(com_sun_squawk_VM_bootstrapSuite != null);
     assume(inROM(com_sun_squawk_VM_bootstrapSuite));
     //diagnosticWithValue("bootstrapSuite: ", com_sun_squawk_VM_bootstrapSuite);
@@ -2277,8 +2277,8 @@ static Address lookupKlass(int cid) {
     //diagnosticWithValue("com_sun_squawk_Suite_classes: ", classes);
     assume(inROM(classes));
     boundsAssume(classes, cid);
-    class = getObject(classes, cid);
-    return class;
+    _class = getObject(classes, cid);
+    return _class;
 }
 
 static Address lookupStaticMethod(int cid, int methodOffset) {

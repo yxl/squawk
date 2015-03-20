@@ -46,7 +46,11 @@
 #    endif /*__VFP_FP__*/
 #    endif
 #else
-#    warning "unsupported processor"
+#    warning "unsupported processor and set as linux"
+#    define linux
+#    define PROCESSOR_ARCHITECTURE_X86 1
+#    define __i386__
+#    define __i386
 #endif
 
 #ifdef __APPLE__

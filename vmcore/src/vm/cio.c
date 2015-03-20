@@ -78,6 +78,10 @@ INLINE void returnAddressResult(Address value) {
 #include "msg.c"
 #endif
 
+#if NATIVE_VERIFICATION
+#include "util/sha.h"
+#endif
+
 /**
  * Execute a channel operation.
  */
@@ -311,7 +315,7 @@ void cioExecute(void) {
         case ChannelConstants_INTERNAL_COMPUTE_SHA1_FOR_MEMORY_REGION:{
             int address=i1;
             int numberOfBytes=i2;
-            unsigned char* buffer_to_write_sha_hash_into = o1;
+            unsigned char* buffer_to_write_sha_hash_into = (unsigned char*)o1;
             sha_for_memory_region(buffer_to_write_sha_hash_into,address,numberOfBytes);
             break;
         }

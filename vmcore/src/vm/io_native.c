@@ -586,7 +586,7 @@ NativeTask* runBlockingFunctionOn(TaskExecutor* te, void* function,
     int rc;
     int eventNumber = getNextEventNumber();
 
-    NativeTask* ntask = newNativeTask(function, eventNumber,
+    NativeTask* ntask = newNativeTask((TaskHandler)function, eventNumber,
                                       arg1, arg2, arg3, arg4, arg5,
                                       arg6, arg7, arg8, arg9, arg10);
      if (ntask == NULL) {
@@ -732,7 +732,7 @@ int getError() {
         if (ch != '\0') {
             exceptionClassName++;
         } else {
-            exceptionClassName = null;
+            exceptionClassName = (char*)null;
         }
         return ch;
     }
@@ -755,14 +755,14 @@ typedef struct dlentryStruct {
 static dlentry dltable[] = {
     {"sysFD_SIZE",      &sysFD_SIZE},
     {"sysSIZEOFSTAT",   &sysSIZEOFSTAT},
-    {"sysFD_CLR",       &sysFD_CLR},
-    {"sysFD_SET",       &sysFD_SET},
-    {"sysFD_ISSET",     &sysFD_ISSET},
+    {"sysFD_CLR",       (void*)&sysFD_CLR},
+    {"sysFD_SET",       (void*)&sysFD_SET},
+    {"sysFD_ISSET",     (void*)&sysFD_ISSET},
     {"com_sun_squawk_platform_posix_callouts_Libc_Stat_layout", (void*)&com_sun_squawk_platform_posix_callouts_Libc_Stat_layout},
     {"_com_sun_squawk_platform_posix_natives_SocketImpl_sockaddr_inImpl_layout", (void*)&_com_sun_squawk_platform_posix_natives_SocketImpl_sockaddr_inImpl_layout},
-    {"squawk_select",   &squawk_select},
-    {"cancel_squawk_select", &cancel_squawk_select},
-    {"squawk_dummy_func", &squawk_dummy_func},
+    {"squawk_select",   (void*)&squawk_select},
+    {"cancel_squawk_select", (void*)&cancel_squawk_select},
+    {"squawk_dummy_func", (void*)&squawk_dummy_func},
 };
 
 #define DL_TABLE_SIZE (sizeof(dltable) / sizeof(dlentry))

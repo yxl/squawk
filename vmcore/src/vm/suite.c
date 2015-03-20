@@ -82,7 +82,7 @@ void DataInputStream_open(DataInputStream *dis, const char *file) {
         stopVM(-1);
     }
 
-    (*dis).in = newBuffer((*dis).size, "DataInputStream_open", true);
+    (*dis).in = (ByteAddress)newBuffer((*dis).size, "DataInputStream_open", true);
     if (readFile(file, (*dis).in, (*dis).size) != (*dis).size) {
         printf("Error reading '%s'\n", file);
         stopVM(-1);
@@ -141,8 +141,8 @@ UWord DataInputStream_readUnsignedByte(DataInputStream *dis, const char *prefix)
  * @return the value read
  */
 UWord DataInputStream_readUnsignedShort(DataInputStream *dis, const char *prefix) {
-    int b1 = DataInputStream_readUnsignedByte(dis, null);
-    int b2 = DataInputStream_readUnsignedByte(dis, null);
+    int b1 = DataInputStream_readUnsignedByte(dis, (const char*)null);
+    int b2 = DataInputStream_readUnsignedByte(dis, (const char*)null);
     UWord value = ((b1 << 8) + (b2 << 0)) & 0xFFFF;
 #if TRACE_SUITE
     fprintf(stderr, "%s:%u\n", prefix, value);
@@ -158,10 +158,10 @@ UWord DataInputStream_readUnsignedShort(DataInputStream *dis, const char *prefix
  * @return the value read
  */
 int DataInputStream_readInt(DataInputStream *dis, const char *prefix) {
-    int b1 = DataInputStream_readUnsignedByte(dis, null);
-    int b2 = DataInputStream_readUnsignedByte(dis, null);
-    int b3 = DataInputStream_readUnsignedByte(dis, null);
-    int b4 = DataInputStream_readUnsignedByte(dis, null);
+    int b1 = DataInputStream_readUnsignedByte(dis, (const char*)null);
+    int b2 = DataInputStream_readUnsignedByte(dis, (const char*)null);
+    int b3 = DataInputStream_readUnsignedByte(dis, (const char*)null);
+    int b4 = DataInputStream_readUnsignedByte(dis, (const char*)null);
     UWord value = ((b1 << 24) + (b2 << 16) + (b3 << 8) + (b4 << 0));
 #if TRACE_SUITE
     fprintf(stderr, "%s:%u\n", prefix, value);
@@ -181,7 +181,7 @@ int DataInputStream_readInt(DataInputStream *dis, const char *prefix) {
 void DataInputStream_readFully(DataInputStream *dis, ByteAddress buf, UWord size, const char *prefix) {
     unsigned int i = 0;
     while (i != size) {
-        buf[i++] = DataInputStream_readUnsignedByte(dis, null);
+        buf[i++] = DataInputStream_readUnsignedByte(dis, (const char*)null);
     }
 #if TRACE_SUITE
     fprintf(stderr, format("%s:{read %A bytes}\n"), prefix, size);
@@ -198,7 +198,7 @@ void DataInputStream_readFully(DataInputStream *dis, ByteAddress buf, UWord size
 void DataInputStream_skip(DataInputStream *dis, UWord n, const char* prefix) {
     unsigned int i = 0;
     while (i++ != n) {
-        DataInputStream_readUnsignedByte(dis, null);
+        DataInputStream_readUnsignedByte(dis, (const char*)null);
     }
 #if TRACE_SUITE
     fprintf(stderr, format("%s:{skipped %A bytes}\n"), prefix, n);
@@ -213,7 +213,7 @@ void DataInputStream_skip(DataInputStream *dis, UWord n, const char* prefix) {
 void DataInputStream_close(DataInputStream *dis) {
     if ((*dis).in != null) {
         freeBuffer((*dis).in);
-        (*dis).in = null;
+        (*dis).in = (ByteAddress)null;
     }
 }
 
@@ -318,7 +318,7 @@ UWord loadBootstrapSuite(const char *file,
     /*
      * Read 'memory'
      */
-    DataInputStream_readFully(&dis, buffer, size, "memory");
+    DataInputStream_readFully(&dis, (ByteAddress)buffer, size, "memory");
 
     /*
      * Calculate the hash of the object memory while it is still in canonical form.

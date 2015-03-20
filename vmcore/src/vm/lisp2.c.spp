@@ -304,7 +304,7 @@
 
             // It is always safe to clear past end, so align up
             alignedEnd = (Address)roundUp((UWord)end, alignment);
-            zeroWords(getAddressOfBitmapWordFor(alignedStart), getAddressOfBitmapWordFor(alignedEnd));
+            zeroWords((UWordAddress)getAddressOfBitmapWordFor(alignedStart), (UWordAddress)getAddressOfBitmapWordFor(alignedEnd));
 /*fprintf(stderr, format("clearBitsFor - start = %A end = %A\n"), start, end);*/
         }
 
@@ -391,5 +391,5 @@
             }
         }
 
-NOINLINE static boolean collectGarbage(Address this, Address allocTop, boolean forceFullGC);
-NOINLINE static Address copyObjectGraph(Address this, Address object, Address cb, Address allocTop);
+NOINLINE static boolean collectGarbage(Address address, Address allocTop, boolean forceFullGC);
+NOINLINE static Address copyObjectGraph(Address address, Address object, Address cb, Address allocTop);

@@ -236,7 +236,7 @@ public class GccCompiler extends CCompiler {
      * @return boolean
      */
     public boolean useSSE2Math() {
-        return true;
+        return false;
     }
 
 }
