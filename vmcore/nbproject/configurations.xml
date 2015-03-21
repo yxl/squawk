@@ -709,8 +709,6 @@
       </item>
       <item path="src/vm/io_metal_native.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/vm/io_native.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="src/vm/io_native.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/vm/io_socket.c" ex="false" tool="0" flavor2="0">

@@ -83,9 +83,7 @@ void diagnosticWithValue(char * msg, int val) {
 #define TRACE true
 #endif
 
-#if PLATFORM_TYPE_NATIVE
-#define IODOTC "io_native.c"
-#elif PLATFORM_TYPE_SOCKET
+#if PLATFORM_TYPE_SOCKET
 #define IODOTC "io_socket.c"
 #elif PLATFORM_TYPE_BARE_METAL
 /* Different bare metal platforms handle this differently - eg set IODOTC to a specific file.
@@ -849,10 +847,6 @@ fprintf(stderr, "VM is in a blocking system call!!! WILL CRASH????");
     }
 #endif
 
-#if PLATFORM_TYPE_NATIVE
-    IO_shutdown();
-#endif
-
     osfinish();
 	inStop = false;
     exit(exitCode);
@@ -1460,9 +1454,7 @@ Address processArgs(char *argv[], const int argc) {
     }
 #endif /* FLASH_MEMORY */
 
-#if PLATFORM_TYPE_NATIVE
-    IO_initialize();
-#elif PLATFORM_TYPE_SOCKET
+#if PLATFORM_TYPE_SOCKET
     IO_initialize();
 #endif
 

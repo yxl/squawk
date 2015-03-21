@@ -105,35 +105,10 @@ typedef struct SimpleMonitor_struct {
     volatile int lockCount; /* for debugging */
 } SimpleMonitor;
 
-#if PLATFORM_TYPE_NATIVE
-
-/**
- * threadEventMonitor is used to synchronize various native threads/interrupt handlers
- * with the Squawk thread scheduler. If Squawk has nothing to do, it will do a timed wait on
- * threadEventMonitor that can be interrupted by an event signalled from a native thread/interrupt handler.
- */
-SimpleMonitor* threadEventMonitor = NULL;
-
-/**
- * addedEvent is set TRUE by multiple writers (native threads) when adding evt, and read by the Squawk thread in osMilliSleep and cleared by
- * the Squawk thread in getEvent(). Protected by threadEventMonitor.
- */
-volatile int addedEvent;
-
-static char* monitorName(SimpleMonitor* mon) {
-    sysAssumeAlways(mon);
-    if (mon == threadEventMonitor) {
-        return "threadEventMonitor";
-    } else {
-        return "unknown monitor";
-    }
-}
-#else
 static char* monitorName(SimpleMonitor* mon) {
     sysAssumeAlways(mon);
     return "unknown monitor";
 }
-#endif
 
 static void monitorErrCheck(SimpleMonitor* mon, char* msg, int res, int expectedValue) {
     if (res != 0 && res != expectedValue) {
@@ -257,34 +232,7 @@ int SimpleMonitorUnlock(SimpleMonitor* mon) {
 
 /* ----------------------- Sleep Support ------------------------*/
 
-#if PLATFORM_TYPE_NATIVE
-
-/**
- * Sleep Squawk for specified milliseconds
- */
-void osMilliSleep(long long millis) {
-    if (DEBUG_EVENTS_LEVEL) { fprintf(stderr, "osMilliSleep %llx\n", millis); }
-
-    if (millis <= 0) {
-        return;
-    }
-
-    /* TRICKY: safe because "addedEvent" is only cleared by this thread. */
-    if (addedEvent) {
-       if (DEBUG_EVENTS_LEVEL) { fprintf(stderr, "osMilliSleep woke up before lock!\n"); }
-       return;
-    }
-
-    if (DEBUG_EVENTS_LEVEL) { fprintf(stderr, "osMilliSleep sleeping..\n"); }
-
-    SimpleMonitorLock(threadEventMonitor);
-    if (addedEvent || SimpleMonitorWait(threadEventMonitor, millis)) {
-        if (DEBUG_EVENTS_LEVEL) { fprintf(stderr, "osMilliSleep woken up early\n"); }
-    }
-
-    SimpleMonitorUnlock(threadEventMonitor);
-}
-#elif PLATFORM_TYPE_BARE_METAL
+#if PLATFORM_TYPE_BARE_METAL
 #else
 #define MAX_MICRO_SLEEP 999999
 
@@ -312,139 +260,6 @@ void osMilliSleep(long long millis) {
     }
 }
 #endif
-
-#if PLATFORM_TYPE_NATIVE
-/* ----------------------- Native Task Support ------------------------*/
-
-static int taskPriorityMap(int genericPriority) {
-    switch (genericPriority) {
-        case TASK_PRIORITY_LOW:
-        case TASK_PRIORITY_MED:
-        case TASK_PRIORITY_HI:
-        default:
-            return 0;
-    }
-}
-
-int setTaskID(TaskExecutor* te) {
-    te->id = (NativeTaskID)pthread_self();
-}
-
-/* function pointer used by pthreads: */
-typedef void*(*pthread_func_t)(void*);
-
-/**
- * Create a new TaskExecutor and native thread.
- */
-TaskExecutor* createTaskExecutor(char* name, int priority, int stacksize) {
-    TaskExecutor* te = (TaskExecutor*)malloc(sizeof(TaskExecutor));
-    pthread_attr_t attr;
-    pthread_t id;
-    /* sched_param param; */
-    int rc; /* return code */
-
-    if (te == NULL) {
-        return NULL;
-    }
-    te->runQ = NULL;
-    te->monitor = SimpleMonitorCreate();
-    te->status = TASK_EXECUTOR_STATUS_STARTING;
-
-    pthread_attr_init(&attr);
-    /* set priority */
-   /* rc = pthread_attr_getschedparam (&attr, &param);
-    param.sched_priority = taskPriorityMap(priority);
-    rc = pthread_attr_setschedparam (&attr, &param); */
-
-    rc = pthread_attr_setstacksize(&attr, (PTHREAD_STACK_MIN > stacksize) ? PTHREAD_STACK_MIN : stacksize);
-
-    if (DEBUG_EVENTS_LEVEL) { fprintf(stderr, "In createTaskExecutor, about to start new thread %s\n", name); }
-    rc = pthread_create(&id, &attr, (pthread_func_t)teLoopingHandler, te);
-
-    if (rc != 0) {
-        te->status = TASK_EXECUTOR_STATUS_ERROR;
-        te->te_errno = errno;
-    }
-    /* TODO: Record TaskExecutor on global list of all TaskExecutors */
-    return te;
-}
-
-/**
- * Delete the TaskExecutor. Returns zero on success.
- * Returns -1 if TaskExecutor is not done.
- */
-static int deleteTaskExecutor(TaskExecutor* te) {
-    if (te->status != TASK_EXECUTOR_STATUS_DONE) {
-        return -1;
-    }
-    if (DEBUG_EVENTS_LEVEL) { fprintf(stderr, "deleteTaskExecutor()\n"); }
-    sysAssumeAlways(te->runQ == NULL);
-    SimpleMonitorDestroy(te->monitor);
-    free(te);
-    return 0;
-    /* TODO: Record TaskExecutor on global list of all TaskExecutors */
-}
-
-/*---------------------------------------------------------------------------*\
- *                               Select Pipe                                 *
-\*---------------------------------------------------------------------------*/
-
-static int pfd[2];
-
-static int setNonBlocking(int fd) {
-    int res = -1;
-    int flags = fcntl(fd, F_GETFL, 0);
-	// fprintf(stderr, "initSelectPipe: fcntl returned: %d\n", flags);
-
-    if (flags >= 0) {
-		// fprintf(stderr, "set_blocking_flags: calling fcntl F_SETFL flags: %d\n", flags | O_NONBLOCK);
-        if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-			// fprintf(stderr, "initSelectPipe: fcntl F_SETFL failed. errno = %d\n", errno);
-        }
-    } else {
-		// fprintf(stderr, "initSelectPipe: fcntl F_GETFL failed. errno = %d\n", errno);
-    }
-    return res;
-}
-
-int initSelectPipe() {
-    int rc = pipe(pfd);
-    sysAssume(rc == 0);
-    rc = setNonBlocking(pfd[0]);
-    rc = setNonBlocking(pfd[1]);
-	// fprintf(stderr, "initSelectPipe: read df = %d, write fd = %d\n", pfd[0], pfd[1]);
-    return rc;
-}
-
-int cleanupSelectPipe() {
-    int rc;
-    rc = close(pfd[0]);
-    sysAssume(rc == 0);
-    rc = close(pfd[1]);
-    sysAssume(rc == 0);
-    return rc;
-}
-
-int readSelectPipeMsg() {
-    int dummy = 5;
-    int rc;
-    while ((rc == read(pfd[0], &dummy, 1)) == 1) {
-
-    }
-    return rc;
-}
-
-int writeSelectPipeMsg()  {
-    char dummy = 5;
-    int res = write(pfd[1], &dummy, 1);
-//fprintf(stderr, "Sending message to cancel select call. res = %d, errno = %d\n", res, errno);
-    return res;
-}
-
-int getSelectReadPipeFd() {
-    return pfd[0];
-}
-#endif /* PLATFORM_TYPE_NATIVE */
 
 /* ----------------------- Memory Support ------------------------*/
 

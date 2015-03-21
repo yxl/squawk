@@ -197,19 +197,11 @@
 #if PLATFORM_TYPE_BARE_METAL==0
 #error PLATFORM_TYPE_BARE_METAL must be 1 or undefined
 #endif
-#define PLATFORM_TYPE_NATIVE 0
 #define PLATFORM_TYPE_SOCKET 0
-#elif defined(PLATFORM_TYPE_NATIVE)
-#if PLATFORM_TYPE_NATIVE==0
-#error PLATFORM_TYPE_NATIVE must be 1 or undefined
-#endif
-#define PLATFORM_TYPE_SOCKET 0
-#define PLATFORM_TYPE_BARE_METAL 0
 #elif defined(PLATFORM_TYPE_SOCKET)
 #if PLATFORM_TYPE_SOCKET==0
 #error PLATFORM_TYPE_SOCKET must be 1 or undefined
 #endif
-#define PLATFORM_TYPE_NATIVE 0
 #define PLATFORM_TYPE_BARE_METAL 0
 #else
 #error "unspecified platform type"

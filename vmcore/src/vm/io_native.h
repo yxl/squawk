@@ -176,51 +176,6 @@ typedef struct {
     TaskHandler handler;
 } NativeTask;
 
-#if PLATFORM_TYPE_NATIVE
-
-typedef enum {
-            TASK_EXECUTOR_STATUS_STARTING = 0,
-            TASK_EXECUTOR_STATUS_RUNNING,
-            TASK_EXECUTOR_STATUS_STOPPING,
-            TASK_EXECUTOR_STATUS_DONE,
-            TASK_EXECUTOR_STATUS_ERROR
-            } TaskExecutorStatus;
-
-typedef struct TaskExecutor_struct {
-    struct SimpleMonitor_struct* monitor;
-    NativeTask* volatile runQ;
-    volatile TaskExecutorStatus status;
-    int te_errno;
-    NativeTaskID id;
-} TaskExecutor;
-
-/**
- * Create a new TaskExecutor and native thread.
- */
-TaskExecutor* createTaskExecutor(char* name, int priority, int stacksize);
-
-/**
- * Tell TaskExecutor to stop running
- */
-static void cancelTaskExecutor(TaskExecutor* te);
-
-/**
- * Delete TaskExecutor struct...
- */
-static int deleteTaskExecutor(TaskExecutor* te);
-
-int setTaskID(TaskExecutor* te);
-
-void teLoopingHandler(TaskExecutor* te);
-
-NativeTask* runBlockingFunctionOn(TaskExecutor* te, void* function,
-            int arg1, int arg2, int arg3, int arg4, int arg5,
-            int arg6, int arg7, int arg8, int arg9, int arg10);
-
-void deleteNativeTask(NativeTask* ntask);
-
-#else /* PLATFORM_TYPE_NATIVE */
-
 typedef struct TaskExecutor_struct {
     int te_errno;
     NativeTaskID id;
@@ -259,8 +214,6 @@ NativeTask* runBlockingFunctionOn(TaskExecutor* te, void* function,
 void deleteNativeTask(NativeTask* ntask) {
      fatalVMError("NativeTasks not supported in this configuration");
 }
-
-#endif /* PLATFORM_TYPE_NATIVE */
 
 /*---------------------------------------------------------------------------*\
  *                               Select Pipe                                 *
