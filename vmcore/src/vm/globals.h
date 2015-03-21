@@ -71,15 +71,6 @@ typedef struct globalsStruct {
     /* Nothing yet... */
 #endif
 
-#if PLATFORM_TYPE_SOCKET
-    char       *_ioport;                     /* The [host and] port number of the optional I/O server. */
-    int         _iosocket;                   /* The socket number of the optional I/O server. */
-    int         _result_low;                 /* The low 32 bits of the last result */
-    int         _result_high;                /* The high 32 bits of the last result */
-    jlong       _io_ops_time;
-    int         _io_ops_count;
-#endif /* PLATFORM_TYPE_SOCKET */
-
     void*       _nativeFuncPtr;               /* Ptr to the function that is being called via NativeUnsafe.call, or null */
 
 #ifdef PROFILING
@@ -195,15 +186,6 @@ boolean     notrap;
     /* Nothing yet... */
 #endif
 
-#if PLATFORM_TYPE_SOCKET
-#define ioport                              defineGlobal(ioport)
-#define iosocket                            defineGlobal(iosocket)
-#define result_low                          defineGlobal(result_low)
-#define result_high                         defineGlobal(result_high)
-#define io_ops_time                         defineGlobal(io_ops_time)
-#define io_ops_count                        defineGlobal(io_ops_count)
-#endif /* PLATFORM_TYPE_SOCKET */
-
 #define cachedClassState                    defineGlobal(cachedClassState)
 #define cachedClass                         defineGlobal(cachedClass)
 #ifdef INTERPRETER_STATS
@@ -278,11 +260,6 @@ int initializeGlobals(Globals *globals) {
     traceLastThreadID = -2;
     traceServiceThread = true;
 #endif /* TRACE */
-
-#if PLATFORM_TYPE_SOCKET
-    ioport = null;
-    iosocket = -1;
-#endif
 
     return 0;
 }

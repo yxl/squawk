@@ -83,9 +83,7 @@ void diagnosticWithValue(char * msg, int val) {
 #define TRACE true
 #endif
 
-#if PLATFORM_TYPE_SOCKET
-#define IODOTC "io_socket.c"
-#elif PLATFORM_TYPE_BARE_METAL
+#if PLATFORM_TYPE_BARE_METAL
 /* Different bare metal platforms handle this differently - eg set IODOTC to a specific file.
  * Also include io_metal.c*/
 #define IODOTC "io_metal_native.c"
@@ -826,12 +824,6 @@ fprintf(stderr, "VM is in a blocking system call!!! WILL CRASH????");
         fprintf(stderr, format(" after %L branches"), getBranchCount());
 #endif /* TRACE */
         fprintf(stderr, format(": exit code = %d ** "), exitCode);
-#if PLATFORM_TYPE_SOCKET
-        if (ioport != null) {
-            jlong average = (io_ops_count == 0 ? 0 : io_ops_time / io_ops_count);
-            fprintf(stderr, format(" (average time for %d I/O operation: %L ms)"), io_ops_count, average);
-        }
-#endif
         fprintf(stderr, "\n");
         fflush(stderr);
 /*else[EMULATOR_LAUNCHER]*/
@@ -891,10 +883,6 @@ void usage() {
     printf("    -Xprof:<n>     take profile sample every 'n' instructions\n");
 #endif /* OSPROF */
 #endif /* PROFILING */
-
-#if PLATFORM_TYPE_SOCKET
-    printf("    -Xioport:[host:]port  connect to an I/O server via a socket\n");
-#endif /* PLATFORM_TYPE_SOCKET */
 
 #if KERNEL_SQUAWK
     printf("    -Xkernel[:<n>] support async handling of interrupts (with signal number <n>)\n");
@@ -1369,11 +1357,6 @@ Address processArgs(char *argv[], const int argc) {
 
         if (arg[1] == 'X') {
             arg += 2; /* skip the '-X' */
-#if PLATFORM_TYPE_SOCKET
-            if (startsWith(arg, "ioport:")) {
-                ioport = arg + 7;
-            } else
-#endif
 #if DEFAULT_NVM_SIZE
             if (startsWith(arg, "mxnvm:")) {
                 nvmSize = parseQuantity(arg+6, wholeArg);
@@ -1453,10 +1436,6 @@ Address processArgs(char *argv[], const int argc) {
         printf("Trap handling disabled\n");
     }
 #endif /* FLASH_MEMORY */
-
-#if PLATFORM_TYPE_SOCKET
-    IO_initialize();
-#endif
 
     /*
      * Set up the buffer that will be used for the ROM, NVM and RAM, remaining.
