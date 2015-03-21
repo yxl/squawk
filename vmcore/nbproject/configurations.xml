@@ -703,8 +703,6 @@
       </item>
       <item path="src/vm/globals.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/vm/io_delegating.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="src/vm/io_metal.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/io_metal.h" ex="false" tool="3" flavor2="0">

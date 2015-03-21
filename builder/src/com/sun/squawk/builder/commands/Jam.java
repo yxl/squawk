@@ -443,9 +443,6 @@ public class Jam extends Thread {
             buffer.append(" ");
             buffer.append(squawkArgs.get(i));
         }
-        if (env.getBooleanProperty("PLATFORM_TYPE_DELEGATING")) {
-            buffer.append(" -J-Djava.awt.headless=true");
-        }
         buffer.append(" -suite:");
         buffer.append(suiteName);
         if (includeDebugger) {

@@ -51,13 +51,6 @@ char* strsignal(int signum) {
 /* defined in os_main.c */
 static char* sysGetAlternateBootstrapSuiteLocation(char* bootstrapSuiteName);
 
-#if PLATFORM_TYPE_DELEGATING
-jint createJVM(JavaVM **jvm, void **env, void *args) {
-    return JNI_CreateJavaVM(jvm, env, args) == 0;
-}
-#endif
-
-
 #define osloop()        /**/
 #define osbackbranch()  /**/
 #define osfinish()      /**/

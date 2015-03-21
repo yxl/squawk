@@ -71,11 +71,6 @@ typedef struct globalsStruct {
     /* Nothing yet... */
 #endif
 
-#if PLATFORM_TYPE_DELEGATING
-    jclass      _channelIO_clazz;            /* JNI handle to com.sun.squawk.vm.ChannelIO. */
-    jmethodID   _channelIO_execute;          /* JNI handle to com.sun.squawk.vm.ChannelIO.execute(...) */
-#endif
-
 #if PLATFORM_TYPE_SOCKET
     char       *_ioport;                     /* The [host and] port number of the optional I/O server. */
     int         _iosocket;                   /* The socket number of the optional I/O server. */
@@ -140,12 +135,6 @@ Globals kernelGlobals;    /* The kernel mode execution context */
 #endif
 
 #define defineGlobalContext(c,x) c._##x
-
-#if PLATFORM_TYPE_DELEGATING
-JNIEnv     *JNI_env;                    /* The pointer to the table of JNI function pointers. */
-
-JavaVM     *jvm;                        /* Handle to the JVM created via the Invocation API. This will be null if Squawk was called from Java code. */
-#endif
 
 #ifdef OLD_IIC_MESSAGES
 Address     freeMessages;               /* The pool of unused message structures */
@@ -231,11 +220,6 @@ boolean     notrap;
 
 #define streams                             defineGlobal(streams)
 #define currentStream                       defineGlobal(currentStream)
-
-#if PLATFORM_TYPE_DELEGATING
-#define channelIO_clazz                     defineGlobal(channelIO_clazz)
-#define channelIO_execute                   defineGlobal(channelIO_execute)
-#endif /* PLATFORM_TYPE_DELEGATING */
 
 #define nativeFuncPtr                       defineGlobal(nativeFuncPtr)
 
