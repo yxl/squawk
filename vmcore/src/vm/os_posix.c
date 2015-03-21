@@ -284,6 +284,7 @@ void osMilliSleep(long long millis) {
 
     SimpleMonitorUnlock(threadEventMonitor);
 }
+#elif PLATFORM_TYPE_BARE_METAL
 #else
 #define MAX_MICRO_SLEEP 999999
 

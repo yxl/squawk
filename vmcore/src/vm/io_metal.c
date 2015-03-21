@@ -52,7 +52,7 @@ static void setDeepSleepEventOutstanding(long long target) {
  * Sleep Squawk for specified milliseconds
  */
 void osMilliSleep(long long millisecondsToWait) {
-    long long target = ((long long) getMilliseconds()) + millisecondsToWait;
+    long long target = ((long long) sysTimeMillis()) + millisecondsToWait;
     if (target <= 0) {
         target = 0x7FFFFFFFFFFFFFFFLL; // overflow detected
     }
@@ -392,13 +392,13 @@ static void ioExecute(void) {
                 res = 0;
                 int offset = i1;
                 int len = i2;
-                int* countBuf = send;
-                char* buf = receive;
-                *countBuf = sysReadSeveral(buf + offset, len, deviceType);
+                int* countBuf = (int*)send;
+                char* buf = (char*)receive;
+                //*countBuf = sysReadSeveral(buf + offset, len, deviceType);
                 freeSerialPort(deviceType); // free serial port for future use
             } else {
                 // Otherwise return event number to say there might be later
-                res = getSerialPortEvent(deviceType);
+                //res = getSerialPortEvent(deviceType);
             }
             break;
         }
@@ -407,14 +407,14 @@ static void ioExecute(void) {
             int offset = i1;
             int len = i2;
             int deviceType = i3;
-            char* buf = send;
-            sysWriteSeveral(buf + offset, len, deviceType);
+            char* buf = (char*)send;
+            //sysWriteSeveral(buf + offset, len, deviceType);
             res = 0;
             break;
         }
 
         case ChannelConstants_GET_HARDWARE_REVISION: {
-            res = get_hardware_revision();
+            //res = get_hardware_revision();
             break;
         }
  
@@ -478,7 +478,7 @@ static void ioExecute(void) {
         }
 
         case ChannelConstants_GET_CURRENT_TIME_ADDR: {
-            res = (int) &clock_counter;
+            res = 0;
             break;
         }
 
@@ -497,17 +497,17 @@ static void ioExecute(void) {
         case ChannelConstants_COMPUTE_CRC16_FOR_MEMORY_REGION: {
             int address = i1;
             int numberOfBytes = i2;
-            res = crc(address, numberOfBytes);
+            //res = crc(address, numberOfBytes);
             break;
         }
 
         case ChannelConstants_GET_DMA_BUFFER_SIZE: {
-            res = dma_buffer_size;
+            //res = dma_buffer_size;
             break;
         }
 
         case ChannelConstants_GET_DMA_BUFFER_ADDRESS: {
-            res = (int) dma_buffer_address;
+            //res = (int) dma_buffer_address;
             break;
         }
         

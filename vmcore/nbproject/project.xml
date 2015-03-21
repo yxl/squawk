@@ -12,6 +12,7 @@
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>src/rts/cortex-m3</sourceRootElem>
+                <sourceRootElem>src/vm</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
@@ -19,6 +20,9 @@
                     <type>0</type>
                 </confElem>
             </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>

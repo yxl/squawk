@@ -39,7 +39,7 @@ extern "C" {
 #include <sys/times.h>
 #endif
 
-#if (PLATFORM_TYPE_BARE_METAL == 0)
+//#if (PLATFORM_TYPE_BARE_METAL == 0)
 /*---------------------------------------------------------------------------*\
  *                                Time Conversions                           *
 \*---------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ INLINE void timeVal2TimeSpec(struct timeval* tv, struct timespec* ts) {
     ts->tv_sec  = tv->tv_sec;
     ts->tv_nsec = tv->tv_usec * 1000;
 };
-#endif
+//#endif
 
 #define MAX_USEC (   1000000 - 1)
 #define MAX_NSEC (1000000000 - 1)
