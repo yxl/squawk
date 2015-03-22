@@ -2027,16 +2027,6 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
             }
         }
 
-#ifdef FLASH_MEMORY
-        /**
-         * Force back branch count to zero so that reschedule will occur.
-         * NB. This function is forced into a special section so that it can be put in RAM.
-         */
-		__attribute__ ((section (".textinram"))) void force_bb_expired() {
-            bc = 0;
-        }
-#endif
-
         /**
          * Unconditional branch.
          *

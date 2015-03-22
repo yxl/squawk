@@ -32,33 +32,6 @@
 // Set to true to enable tracing of the bootstrap suite file as it's read
 #define TRACE_SUITE false
 
-#ifdef FLASH_MEMORY
-
-// the next definition needs to be kept in sync with suite converter
-#define NUMBER_OF_BYTES_IN_BYTECODE_HEADER (3 * sizeof(UWord))
-
-UWord loadBootstrapSuiteFromFlash(
-						char	*bootstrapSuiteFile,
-                        Address *romStart,
-                        Address *suite,
-                        int     *hash) {
-	 // ROM starts at the flash address set on command line
-    Address javabytecodesbase = (Address) atoi(bootstrapSuiteFile);
-    *suite = (void *)(getUWord(javabytecodesbase, 0) + javabytecodesbase);
-    *hash = (int)getUWord(javabytecodesbase, 1);
-    UWord size=getUWord(javabytecodesbase, 2);
-    *romStart=(void *)(javabytecodesbase + NUMBER_OF_BYTES_IN_BYTECODE_HEADER);
-    
-    diagnosticWithValue("javabytecodesbase: ", (int) javabytecodesbase);
-    diagnosticWithValue("rootOffset: ", (int) *suite);
-    diagnosticWithValue("hash: ", getUWord(javabytecodesbase, 0));
-    diagnosticWithValue("suite size: ", size);
-    diagnosticWithValue("romStart: ", (int) *romStart);
-    return size;
-}
-
-#else /* FLASH_MEMORY */
-
 /**
  * Wrapper for a file input stream that provides a subset of the functionality
  * of the java.io.DataInputStream class.
@@ -391,5 +364,3 @@ UWord loadBootstrapSuite(const char *file,
 
     return size;
 }
-
-#endif /* FLASH_MEMORY */

@@ -95,21 +95,7 @@ int db_printf2(char* format, int i1, int i2) {
 
 void db_send_ready() {
     db_printf0("\n");
-#ifdef FLASH_MEMORY
-	/*
-	 * We add 0x30 to the base address of the bootstrap flash area to skip the
-	 * suite header. This number will change if the size of the header changes.
-	 * The address used here should match the address saved by the FlashObjectMemoryLoader
-	 * in the loadMemory method. It is the address immediately after the pad.
-	 * Breakpoint locations are calculated by adding to this address the offset
-	 * to the method and the offset from there to the specific line number, both as
-	 * specified in the .sym file.
-	 */
-    db_printf2("*DEBUG*:R:%i:%i\n", (int)com_sun_squawk_VM_romStart, db_app_addr+0x30);
-#else
     db_printf1("*DEBUG*:R:%i\n", (int)com_sun_squawk_VM_romStart);
-#endif
-
 }
 
 void db_send_bp_hit(int bpnum) {

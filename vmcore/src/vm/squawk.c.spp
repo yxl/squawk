@@ -101,9 +101,7 @@ void diagnosticWithValue(char * msg, int val) {
 /*
  * Forward refs.
  */
-#ifndef FLASH_MEMORY
 static void printCacheStats();
-#endif
 
 #if TRACE
 boolean openTraceFile();
@@ -691,8 +689,6 @@ int readFile(const char *file, Address buffer, UWord size) {
  */
 #define AS_PERCENT(part, whole)    (int)((((jlong)part) * 100) / (whole)), (int)(((((jlong)part) * 10000) / (whole)) % 100)
 
-#ifndef FLASH_MEMORY
-
 static void printCacheStat(const char *label, int part, jlong whole) {
     if (whole == 0) {
         fprintf(stderr, " %s:0%%", label);
@@ -752,8 +748,6 @@ static void printCacheStats() {
     fprintf(stderr, format("GCs: %d full, %d partial\n"), com_sun_squawk_GC_fullCollectionCount, com_sun_squawk_GC_partialCollectionCount);
 }
 
-#endif /* !FLASH_MEMORY */
-
 /**
  * Stops the VM running.
  *
@@ -786,9 +780,7 @@ fprintf(stderr, "VM is in a blocking system call!!! WILL CRASH????");
         }
 /*if[!EMULATOR_LAUNCHER]*/
         fprintf(stderr, "\n\n");
-#ifndef FLASH_MEMORY
         printCacheStats();
-#endif /* !FLASH_MEMORY */
         fprintf(stderr, "** VM stopped");
 #ifdef PROFILING
         fprintf(stderr, format(" after %L instructions"), instructionCount);
@@ -857,9 +849,7 @@ void usage() {
 #endif /* OSPROF */
 #endif /* PROFILING */
 
-#ifndef FLASH_MEMORY
     printf("    -Xnotrap       don't trap VM crashes\n");
-#endif /* FLASH_MEMORY */
 }
 
 /**
@@ -1018,14 +1008,6 @@ Address setupMemory(int ramSize, int nvmSize, int argc, char *argv[], char *boot
     diagnosticWithValue("setupMemory: ram size", ramSize);
     diagnosticWithValue("setupMemory: nvmSize size", nvmSize);
 
-#ifdef FLASH_MEMORY
-    memorySize = roundUp(ramSize - (pageSize-1), pageSize);
-    ramSize = memorySize - roundUp(serviceChunkSize, pageSize) - roundUp(argvTotalSize, pageSize) - roundUp(nvmSize, pageSize);
-    diagnosticWithValue("ram size", ramSize);
-	diagnosticWithValue("page size", pageSize);
-	diagnosticWithValue("memory size", memorySize);
-    assume(!TYPEMAP);
-#else /* FLASH_MEMORY */
     memorySize = getFileSize(bootstrapSuiteFile);
     if (memorySize == -1) {
         char* altName = sysGetAlternateBootstrapSuiteLocation(bootstrapSuiteFile);
@@ -1039,7 +1021,6 @@ Address setupMemory(int ramSize, int nvmSize, int argc, char *argv[], char *boot
     memorySize = roundUp(memorySize + nvmSize, pageSize);
     memorySize = roundUp(memorySize + serviceChunkSize, pageSize);
     memorySize = roundUp(memorySize + argvTotalSize, pageSize);
-#endif /* FLASH_MEMORY */
 
      // Double the memory buffer to allocate the type map if necessary
     realMemorySize = TYPEMAP ? memorySize * 2 : memorySize;
@@ -1047,34 +1028,14 @@ Address setupMemory(int ramSize, int nvmSize, int argc, char *argv[], char *boot
     // Allocate the memory buffer
     memory = newBuffer(realMemorySize, "memory", true);
     memoryEnd = Address_add(memory, memorySize);
-#ifdef FLASH_MEMORY
-    bootstrapSize = loadBootstrapSuiteFromFlash(bootstrapSuiteFile, &com_sun_squawk_VM_romStart, &suite, &com_sun_squawk_VM_bootstrapHash);
-    com_sun_squawk_VM_bootstrapStart = com_sun_squawk_VM_romStart;
-
-#ifdef VIRTUAL_ADDRESS_SPACE_LOWER_BOUND
-    // on SPOTs and machines with MMU, flash memory may be virtually allocated to a larger range than specified by get_flash_base() + get_flash_size()
-    assume((Address)VIRTUAL_ADDRESS_SPACE_LOWER_BOUND > com_sun_squawk_VM_romStart);
-    com_sun_squawk_VM_romEnd = (Address)VIRTUAL_ADDRESS_SPACE_UPPER_BOUND;
-    //com_sun_squawk_VM_romEnd = (Address)(FLASH_BASE_ADDR + FLASH_BASE_SIZE);
-#else /* VIRTUAL_ADDRESS_SPACE_LOWER_BOUND */
-    com_sun_squawk_VM_romEnd = (Address)(get_flash_base() + get_flash_size());
-#endif /* VIRTUAL_ADDRESS_SPACE_LOWER_BOUND */
-    
-#else /* FLASH_MEMORY */
     // ROM starts at the begining of the VM's memory buffer
     com_sun_squawk_VM_romStart = com_sun_squawk_VM_bootstrapStart = memory;
     bootstrapSize = loadBootstrapSuite(bootstrapSuiteFile, memory, memorySize, &suite, &com_sun_squawk_VM_bootstrapHash);
     com_sun_squawk_VM_romEnd = Address_add(com_sun_squawk_VM_romStart, bootstrapSize);
-#endif /* FLASH_MEMORY */
     com_sun_squawk_VM_bootstrapEnd = Address_add(com_sun_squawk_VM_bootstrapStart, bootstrapSize);
 
-#ifdef FLASH_MEMORY
-    // NVM starts at the beginning of the memory buffer
-    com_sun_squawk_GC_nvmStart = (Address)roundUp((UWord)memory, pageSize);
-#else
     // NVM starts on the next page after the end of ROM
     com_sun_squawk_GC_nvmStart = (Address)roundUp((UWord)com_sun_squawk_VM_romEnd, pageSize);
-#endif /* FLASH_MEMORY */
     com_sun_squawk_GC_nvmEnd = Address_add(com_sun_squawk_GC_nvmStart, nvmSize);
     com_sun_squawk_GC_nvmAllocationPointer = com_sun_squawk_GC_nvmStart;
 
@@ -1129,7 +1090,6 @@ Address setupMemory(int ramSize, int nvmSize, int argc, char *argv[], char *boot
     return suite;
 }
 
-#ifndef FLASH_MEMORY
 /********* SIGNAL HANDLING *********
  * Use OS provided signal handling to catch interrupts, bus errors, and segmentation violations.
  **********************************/
@@ -1222,7 +1182,6 @@ void setupSignals() {
 }
 
 #endif  // the new way
-#endif // FLASH_MEMORY
 
 
 /**
@@ -1282,10 +1241,8 @@ Address processArgs(char *argv[], const int argc) {
 #endif
             } else if (startsWith(arg, "tgc:")) {
                 com_sun_squawk_GC_traceFlags = parseQuantity(arg+4, wholeArg);
-#ifndef FLASH_MEMORY
             } else if (equals(arg, "notrap")) {
                 notrap = true;
-#endif /* FLASH_MEMORY */
 #if TRACE
             } else if (equals(arg, "tnoservice")) {
                 traceServiceThread = false;
@@ -1339,13 +1296,11 @@ Address processArgs(char *argv[], const int argc) {
 //    newIndex = argc;
 /*end[EMULATOR_LAUNCHER]*/
 
-#ifndef FLASH_MEMORY
     if (!notrap) {
         setupSignals();
     } else {
         printf("Trap handling disabled\n");
     }
-#endif /* FLASH_MEMORY */
 
     /*
      * Set up the buffer that will be used for the ROM, NVM and RAM, remaining.

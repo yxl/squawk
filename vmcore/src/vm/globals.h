@@ -301,11 +301,9 @@ void finalizeStreams() {
         FILE *file = streams[i];
         if (file != null) {
             fflush(file);
-#ifndef FLASH_MEMORY
             if (file != stdout && file != stderr) {
                 fclose(file);
             }
-#endif /* FLASH_MEMORY */
         }
     }
 }

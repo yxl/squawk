@@ -104,9 +104,7 @@
 #    ifndef O_BINARY
 #        define O_BINARY 0 /* for compatibility with open() and close() on Windows */
 #    endif /* O_BINARY */
-#    ifndef FLASH_MEMORY
 #	    include <sys/mman.h>
-#    endif /* FLASH_MEMORY */
 #    ifdef __GNUC__
 #        include <unistd.h>
 #        undef  ujlong
