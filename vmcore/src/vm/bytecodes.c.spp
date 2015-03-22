@@ -3246,7 +3246,7 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
                 com_sun_squawk_ServiceOperation_i1 = overflow;
 
                 if (TRACE) {
-                    printStackTracePrim(-1, ip, fp, "extending stack", null);
+                    printStackTracePrim(-1, ip, fp, "extending stack", (const char*)null);
                 }
 
                 threadSwitchFor(com_sun_squawk_ServiceOperation_EXTEND);
@@ -4538,7 +4538,7 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
                     com_sun_squawk_ServiceOperation_o1 = o1;
                     com_sun_squawk_ServiceOperation_o2 = o2;
  if (TRACE) {
-                    printStackTracePrim(-1, ip, fp, "COPY_OBJECT_GRAPH", null);
+                    printStackTracePrim(-1, ip, fp, "COPY_OBJECT_GRAPH", (const char*)null);
                 }
                     threadSwitchFor(com_sun_squawk_ServiceOperation_COPY_OBJECT_GRAPH);
                     break;
@@ -4549,7 +4549,7 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
                     boolean forceFullGC = popInt();
                     com_sun_squawk_ServiceOperation_i1 = forceFullGC;
  if (TRACE) {
-                    printStackTracePrim(-1, ip, fp, "GARBAGE_COLLECT", null);
+                    printStackTracePrim(-1, ip, fp, "GARBAGE_COLLECT", (const char*)null);
                 }
                     threadSwitchFor(com_sun_squawk_ServiceOperation_GARBAGE_COLLECT);
                     break;
@@ -5611,7 +5611,7 @@ if (l != 0 && r > (java_lang_Long_MAX_VALUE/l)) {
             buf[pos++] = ' ';
             pos += printJavaStringBuf(java_lang_Throwable_detailMessage(exception), buf + pos, 999 - pos);
             buf[pos] = 0;
-            printStackTracePrim(-1, ip, fp, buf, null);
+            printStackTracePrim(-1, ip, fp, buf, (const char*)null);
         }
 #else
 #define PRINTSTACK() /**/

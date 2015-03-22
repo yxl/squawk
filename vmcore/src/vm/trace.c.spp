@@ -558,7 +558,7 @@ void printStackTrace(const char *msg) {
     ByteAddress lastIP = ip;
     UWordAddress lastFP = fp;
 #endif /* MACROIZE */
-    printStackTracePrim(-1, lastIP, lastFP, msg, null);
+    printStackTracePrim(-1, lastIP, lastFP, msg, (const char*)null);
 }
 
 #endif /* TRACE */
