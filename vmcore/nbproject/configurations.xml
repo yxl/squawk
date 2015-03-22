@@ -152,10 +152,6 @@
           <itemPath>src/vm/fp/s_tan.c</itemPath>
           <itemPath>src/vm/fp/w_sqrt.c</itemPath>
         </logicalFolder>
-        <logicalFolder name="util" displayName="util" projectFiles="true">
-          <itemPath>src/vm/util/sha.c</itemPath>
-          <itemPath>src/vm/util/sha.h</itemPath>
-        </logicalFolder>
         <itemPath>src/vm/address.c.spp</itemPath>
         <itemPath>src/vm/buildflags.h</itemPath>
         <itemPath>src/vm/bytecodes.c.spp</itemPath>
@@ -709,10 +705,6 @@
       <item path="src/vm/trace.c.spp" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/util.h.spp" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/vm/util/sha.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/vm/util/sha.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/vm/vm2c.c.spp" ex="false" tool="0" flavor2="0">
       </item>
