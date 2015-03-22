@@ -90,8 +90,6 @@
         </logicalFolder>
         <logicalFolder name="gcc" displayName="gcc" projectFiles="true">
           <itemPath>src/rts/gcc/os.c</itemPath>
-          <itemPath>src/rts/gcc/os_devices.c</itemPath>
-          <itemPath>src/rts/gcc/os_devices.h</itemPath>
           <itemPath>src/rts/gcc/os_math.h</itemPath>
         </logicalFolder>
         <logicalFolder name="gcc-9200" displayName="gcc-9200" projectFiles="true">
@@ -114,15 +112,11 @@
         </logicalFolder>
         <logicalFolder name="gcc-macosx" displayName="gcc-macosx" projectFiles="true">
           <itemPath>src/rts/gcc-macosx/os.c</itemPath>
-          <itemPath>src/rts/gcc-macosx/os_devices.c</itemPath>
-          <itemPath>src/rts/gcc-macosx/os_devices.h</itemPath>
           <itemPath>src/rts/gcc-macosx/os_main.c</itemPath>
           <itemPath>src/rts/gcc-macosx/os_math.h</itemPath>
         </logicalFolder>
         <logicalFolder name="msc" displayName="msc" projectFiles="true">
           <itemPath>src/rts/msc/os.c</itemPath>
-          <itemPath>src/rts/msc/os_devices.c</itemPath>
-          <itemPath>src/rts/msc/os_devices.h</itemPath>
           <itemPath>src/rts/msc/os_math.h</itemPath>
         </logicalFolder>
         <logicalFolder name="vxworks" displayName="vxworks" projectFiles="true">
@@ -168,9 +162,10 @@
         <itemPath>src/vm/cio.c</itemPath>
         <itemPath>src/vm/debug.c</itemPath>
         <itemPath>src/vm/debugger.c.spp</itemPath>
-        <itemPath>src/vm/devices.c</itemPath>
         <itemPath>src/vm/globals.h</itemPath>
         <itemPath>src/vm/io_delegating.c</itemPath>
+        <itemPath>src/vm/io_metal.c</itemPath>
+        <itemPath>src/vm/io_metal.h</itemPath>
         <itemPath>src/vm/io_native.c</itemPath>
         <itemPath>src/vm/io_native.h</itemPath>
         <itemPath>src/vm/io_socket.c</itemPath>
@@ -609,27 +604,15 @@
       </item>
       <item path="src/rts/gcc-macosx/os.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/rts/gcc-macosx/os_devices.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/rts/gcc-macosx/os_devices.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="src/rts/gcc-macosx/os_main.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/rts/gcc-macosx/os_math.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/rts/gcc/os.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/rts/gcc/os_devices.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/rts/gcc/os_devices.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="src/rts/gcc/os_math.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/rts/msc/os.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/rts/msc/os_devices.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/rts/msc/os_devices.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/rts/msc/os_math.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -664,8 +647,6 @@
       <item path="src/vm/debug.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/debugger.c.spp" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/vm/devices.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/fp/e_rem_pio2.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -706,8 +687,6 @@
       <item path="src/vm/io_metal.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/io_metal.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/vm/io_metal_native.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/io_native.h" ex="false" tool="3" flavor2="0">
       </item>

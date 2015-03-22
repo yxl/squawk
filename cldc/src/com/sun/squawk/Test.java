@@ -458,12 +458,15 @@ public class Test {
      */
     static void x45() {
 //VM.print("x45 bcount = "); VM.println(VM.branchCount());
+        VMThread t = null;
         for (int i = 0; i != 200; i++) {
 //VM.print("x45 i = "); VM.print(i); VM.print(" bcount = "); VM.println(VM.branchCount());
-            VMThread t = x45Thread(i);
+            t = x45Thread(i);
             if (t == null) {
                 break;
             }
+        }
+        if (t != null) {
             try {
                 t.join();
             } catch (InterruptedException ie) {
@@ -484,9 +487,9 @@ public class Test {
                     f();
                 }
 
-                private void f() {
+                private synchronized void f() {
                     x45count++;
-//VM.print("x45 count = "); VM.println(x45count);
+                    VM.print("x45 count = "); VM.println(x45count);
                 }
             };
             VMThread t = VMThread.asVMThread(r);

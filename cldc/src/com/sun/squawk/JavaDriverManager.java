@@ -62,9 +62,6 @@
 //     * @return true if the driver was successfully loaded, false otherwise
 //     */
 //    public static boolean loadDriver(String className) {
-//        if (VM.isInKernel()) {
-//            throw new IllegalStateException("cannot initiate driver load request from within kernel");
-//        }
 //        try {
 //            StreamConnection con = (StreamConnection) Connector.open("msg:////dev-load-request");
 //            DataOutputStream out = con.openDataOutputStream();
@@ -125,62 +122,6 @@
 //    public static void setupInterrupt(int interrupt, String handler) {
 //        VM.setupInterrupt(interrupt, handler);
 //    }
-//
-///*if[KERNEL_SQUAWK_HOSTED]*/
-//
-//    /**
-//     * Retrieves the value of a low-level statistic for a given device interrupt.
-//     *
-//     * @param interrupt  identifier of interrupt to query
-//     * @param id         {@link #STATUS_CAUGHT}, {@link #STATUS_IGNORED} or {@link #STATUS_TIMESTAMP}
-//     * @return the value of the requested status field
-//     * @throws IllegalArgumentException if <code>id</code> is not one of the accepted values
-//     */
-//    public static long getInterruptStatus(int interrupt, int id) {
-//        if (id < STATUS_CAUGHT || id > STATUS_TIMESTAMP) {
-//            throw new IllegalArgumentException();
-//        }
-//        return VM.getInterruptStatus(interrupt, id);
-//    }
-//
-//    /**
-//     * Constant to be used with {@link #getInterruptStatus} to query the number of times
-//     * a particular interrupt has been caught and handled.
-//     */
-//    public static final int STATUS_CAUGHT = 0;
-//
-//    /**
-//     * Constant to be used with {@link #getInterruptStatus} to query the number of times
-//     * a particular interrupt has been ignored.
-//     */
-//    public static final int STATUS_IGNORED = 1;
-//
-//    /**
-//     * Constant to be used with {@link #getInterruptStatus} to query the last {@link System#currentTimeMicros time}
-//     * at which a particular interrupt was caught.
-//     */
-//    public static final int STATUS_TIMESTAMP = 2;
-//
-//    /**
-//     * Emulates generation of a hardware interrupt.
-//     *
-//     * @param signum  the signal to raise
-//     */
-//    public static void sendInterrupt(int signum) {
-//        VM.sendInterrupt(signum);
-//    }
-//
-//    /**
-//     * Schedules the platform-specific alarm timer.
-//     *
-//     * @param start      interval to wait (in microseconds) before delivering first signal
-//     * @param period     period to wait (in microseconds) before delivering subsequent signals
-//     */
-//    public static void setupAlarmInterval(int start, int period) {
-//        VM.setupAlarmInterval(start, period);
-//    }
-//
-///*end[KERNEL_SQUAWK_HOSTED]*/
 //}
 //
 ///**

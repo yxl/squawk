@@ -56,9 +56,6 @@
 #ifdef __APPLE__
 #    include <CoreFoundation/CoreFoundation.h>
 #    include <pthread.h>
-/*if[KERNEL_SQUAWK]*/
-#    include <dlfcn.h>
-/*end[KERNEL_SQUAWK]*/
 #    include <sys/resource.h>
 #    include <sys/time.h>
 #else
@@ -120,11 +117,6 @@
 #        endif /* sun */
 #    else /* assume CC */
 #    endif /* __GNUC__ */
-/*if[KERNEL_SQUAWK]*/
-#    ifndef FLASH_MEMORY
-#        include <pthread.h>
-#    endif /* FLASH_MEMORY */
-/*end[KERNEL_SQUAWK]*/
 #endif /* _MSC_VER */
 
 #ifndef INLINE
@@ -163,12 +155,6 @@
 #        define INLINE_JAVA_FP 1
 #    endif
 #endif
-
-/*if[KERNEL_SQUAWK]*/
-#ifndef MAXSIG
-#    define MAXSIG 32
-#endif
-/*end[KERNEL_SQUAWK]*/
 
 /**
  * These two conditional compilation macros are also used as values in certain parts and

@@ -136,9 +136,6 @@ int storeIrqRequest (int irq_mask) {
     return newRequest->eventNumber;
 }
 
-/* ioPostEvent is a no-op for us */
-static void ioPostEvent(void) { }
-
 /*
  * If there are outstanding irqRequests and one of them is for an interrupt that has
  * occurred return its eventNumber. Otherwise return 0

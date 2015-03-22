@@ -2026,45 +2026,6 @@ hbp.dumpState();
         print("\n");
     }
 
-
-
-/*if[KERNEL_SQUAWK]*/
-    /**
-     * Pauses the interpreter in kernel mode. Calling this is turned into a OPC_PAUSE
-     * bytecode by the translator.
-     */
-    native static void pause();
-
-    /**
-     * Determines if the VM in currently in the kernel context.
-     *
-     * @return true if the VM in currently in the kernel context
-     */
-    native static boolean isInKernel();
-
-    /*-----------------------------------------------------------------------*\
-     *               Native functions for interrupts                         *
-    \*-----------------------------------------------------------------------*/
-
-    /**
-     * @see  JavaDriverManager#setupInterrupt
-     */
-    native static void setupInterrupt(int interrupt, String handler);
-
-    /*
-     * These functions below should really be conditionally included only if
-     * the build property KERNEL_SQUAWK_HOSTED is true. However, that
-     * would mean that Native.java would have to regenerated every time
-     * the property was changed. For now, we'll just let them use up a
-     * little of the native function identifier space and remove them
-     * once the examples have served their purpose.
-     */
-
-    native static void sendInterrupt(int signum);
-    native static void setupAlarmInterval(int start, int period);
-    native static long getInterruptStatus(int interrupt, int id);
-/*end[KERNEL_SQUAWK]*/
-
     /*-----------------------------------------------------------------------*\
      *                        Miscellaneous functions                        *
     \*-----------------------------------------------------------------------*/

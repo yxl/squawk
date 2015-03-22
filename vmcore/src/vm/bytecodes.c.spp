@@ -4516,14 +4516,7 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
                     break;
                 }
 /*end[FINALIZATION]*/
-
-/*if[KERNEL_SQUAWK]*/
-                case Native_com_sun_squawk_VM_isInKernel: {
-                    pushInt(inKernelMode());
-                    break;
-                }
-/*end[KERNEL_SQUAWK]*/
-
+               
                 case Native_com_sun_squawk_VM_threadSwitch: {
                     if (com_sun_squawk_VMThread_currentThread !=
                         com_sun_squawk_VMThread_otherThread) { /* this actually happens in tight producer/consumer loops */
@@ -4761,39 +4754,6 @@ boolean sda_handleSingleStep(ByteAddress actual_ip, UWordAddress actual_fp, UWor
                 }
 
 /*end[LISP2_BITMAP]*/
-
-/*if[KERNEL_SQUAWK]*/
-                case Native_com_sun_squawk_VM_sendInterrupt: {
-                    int interrupt = popInt();
-                    void os_sendInterrupt(int);
-                    os_sendInterrupt(interrupt);
-                    break;
-                }
-
-                case Native_com_sun_squawk_VM_setupInterrupt: {
-                    Address handler = popAddress();
-                    int interrupt = popInt();
-                    void os_setupInterrupt(int, Address);
-                    os_setupInterrupt(interrupt, handler);
-                    break;
-                }
-
-                case Native_com_sun_squawk_VM_setupAlarmInterval: {
-                    int period = popInt();
-                    int start = popInt();
-                    void os_setupAlarmInterval(int, int);
-                    os_setupAlarmInterval(start, period);
-                    break;
-                }
-
-                case Native_com_sun_squawk_VM_getInterruptStatus: {
-                    int id = popInt();
-                    int interrupt = popInt();
-                    jlong os_getInterruptStatus(int, int);
-                    pushLong(os_getInterruptStatus(interrupt, id));
-                    break;
-                }
-/*end[KERNEL_SQUAWK]*/
 
                 default: {
                     /*fprintf(stderr, "*** Undefined native method: *** %d\n", iparm);*/

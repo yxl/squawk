@@ -69,11 +69,6 @@ void diagnosticWithValue(char * msg, int val) {
 #define DEBUG_STARTUP 0
 #endif
 
-// Single or user and kernel Squawk systems.
-#ifndef KERNEL_SQUAWK
-#define KERNEL_SQUAWK false
-#endif
-
 #ifndef TRACE
 #define TRACE false
 #endif
@@ -88,7 +83,7 @@ void diagnosticWithValue(char * msg, int val) {
  * Also include io_metal.c*/
 #define IODOTC "io_metal_native.c"
 #else
-#error "unspecified platform type"
+//#error "unspecified platform type"
 #endif
 
 #if defined(TYPEMAP) && TYPEMAP != 0
@@ -244,14 +239,7 @@ NORETURN void stopVM(int);
     sl = ss + SC_limit;                                  \
 }                                                        \
 
-/*
- * Test to see if the interpreter is running in kernel mode.
- */
-#if KERNEL_SQUAWK
-#define inKernelMode() (gp == &kernelGlobals)
-#else
 #define inKernelMode() false
-#endif
 
 /*
  * Test to see if the interpreter is running on the GC stack
@@ -562,27 +550,12 @@ void freeBuffers() {
 #include "vm2c.c"
 
 
-#if KERNEL_SQUAWK
-/*
- * Include the device-related definitions
- */
-#include "os_devices.h"
-#else
 #define deferInterruptsAndDo(action)        do { action; } while (0)
-#endif
 
 /*
  * Include the I/O system
  */
 #include "cio.c"
-
-#if KERNEL_SQUAWK
-/*
- * Include the device-related routines
- */
-#include "os_devices.c"
-#include "devices.c"
-#endif
 
 /*
  * Include the instruction trace routine.
@@ -884,11 +857,6 @@ void usage() {
 #endif /* OSPROF */
 #endif /* PROFILING */
 
-#if KERNEL_SQUAWK
-    printf("    -Xkernel[:<n>] support async handling of interrupts (with signal number <n>)\n");
-    printf("    -K<flags>      arguments to pass to kernel VM\n");
-#endif /* KERNEL_SQUAWK */
-
 #ifndef FLASH_MEMORY
     printf("    -Xnotrap       don't trap VM crashes\n");
 #endif /* FLASH_MEMORY */
@@ -1160,64 +1128,6 @@ Address setupMemory(int ramSize, int nvmSize, int argc, char *argv[], char *boot
 
     return suite;
 }
-
-#if KERNEL_SQUAWK
-/**
- * Preprocess the command line arguments.
- *
- * @param argv    the original command line options
- * @param argc    the number of components in argv
- * @return the pointer to the relocated bootstrap suite in ROM
- */
-void preprocessArgs(char *argv[], int *argc,
-                    char *kernelArgs[], int *kernelArgsCount) {
-    int newIndex = 0;
-    int oldIndex = 0;
-    int indexLim = *argc;
-
-    *kernelArgsCount = 0;
-    while (oldIndex != indexLim) {
-        char *arg = argv[oldIndex];
-        if (arg[0] != '-') {
-            break; /* finished VM options part */
-        }
-
-        if (arg[1] != 'X' && arg[1] != 'K') {
-            argv[newIndex++] = arg;
-        } else {
-            if (arg[1] == 'X') {
-                if (startsWith(arg + 2, "kernel")) {
-                    kernelMode = true;
-                    if (arg[8] == ':') {
-                        int n = atoi(arg + 9);
-                        kernelSignal = (n == 0) ? SIGSYS : n;
-                    } else {
-                        kernelSignal = SIGSYS;
-                    }
-                } else {
-                    argv[newIndex++] = arg;
-                }
-            } else {
-                /* '-K' flag */
-                /* Use "MAX_JVM_ARGS - 1" to reserve space for
-                 * "java.lang.JavaDriverManager". */
-                if (*kernelArgsCount >= MAX_JVM_ARGS - 1) {
-                    fatalVMError("too many '-K' flags");
-                }
-                kernelArgs[(*kernelArgsCount)++] = arg + 2;
-            }
-        }
-        oldIndex++;
-    }
-
-    /* Copy main class and it args */
-    while (oldIndex != indexLim) {
-        argv[newIndex++] = argv[oldIndex++];
-    }
-
-    *argc = newIndex;
-}
-#endif /* KERNEL_SQUAWK */
 
 #ifndef FLASH_MEMORY
 /********* SIGNAL HANDLING *********
@@ -1828,17 +1738,9 @@ Address Squawk_setup(int argc, char *argv[]) {
  * Implements the OPC.PAUSE bytecode. This must be a macro as it
  * executes a return from the main interpreter loop.
  */
-#if KERNEL_SQUAWK
-#define do_pause() {        \
-fprintf(stderr, format("VM.pause called after %L branches (kernelMode %d)\n"), getBranchCount(), inKernelMode()); \
-    saveContextRegisters(); \
-    return;                 \
-}
-#else /* KERNEL_SQUAWK */
 #define do_pause() {        \
     fatalInterpreterError("Illegal Squawk bytecode (OPC.PAUSE = 0xFF)"); \
 }
-#endif /* KERNEL_SQUAWK */
 
 /**
  * Continues execution of the VM from the last OPC.PAUSE.
@@ -2111,21 +2013,6 @@ void Squawk_run(int argc, char *argv[]) {
  * @param argv the parameter argument vector
  */
 void Squawk_main(int argc, char *argv[]) {
-#if KERNEL_SQUAWK
-    /* Doing this here guaratees that all configurations (including
-     * Java_com_sun_squawk_vm_Main_squawk() via JNI) have access to
-     * a kernel/user split. However, Nik felt this option should be
-     * done explicitly for only those platforms that will use this
-     * mode. This seems good enough for now. */
-    char *kernelArgs[MAX_JVM_ARGS];
-    int   kernelArgsCount = 0;
-
-    preprocessArgs(argv, &argc, kernelArgs, &kernelArgsCount);
-    if (kernelMode) {
-        Squawk_setSignalHandlers();
-        Squawk_kernelMain(kernelArgsCount, kernelArgs);
-    }
-#endif /* KERNEL_SQUAWK */
     diagnostic("in Squawk_main");
     Squawk_run(argc, argv);
     fatalVMError("return from interpreter loop in non-kernel mode");

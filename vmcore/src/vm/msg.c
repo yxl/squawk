@@ -49,15 +49,6 @@ typedef struct messageStruct {
 } Message;
 
 
-#if KERNEL_SQUAWK
-/**
- * Macros to generate and compare device-specific interrupt urls
- */
-#define createInterruptURL(buf, interrupt) sprintf(buf, "////irq%d", interrupt)
-#define isDeviceKey(key)      (strncmp(key, "////irq", 7) == 0)
-#define getInterruptNum(key)  (atoi((char *)key + 7))
-
-#else
 /*
  * Routines that will come from devices.c if in kernel mode
  */
@@ -66,8 +57,6 @@ INLINE void *safeMalloc(unsigned length) {
 //  printf("Trying to allocate %d bytes\n", length);
     return malloc(length);
 }
-
-#endif /* KERNEL_SQUAWK */
 
 // Forward declarations
 INLINE void assumeInterruptsAreDisabled();
@@ -118,12 +107,6 @@ INLINE Message *allocateMessage(Address key) {
  */
 INLINE void freeMessage(Message *msg) {
     assumeInterruptsAreDisabled();
-#if KERNEL_SQUAWK
-    /* Don't reuse device message buffers! */
-    if (isDeviceKey(msg->name)) {
-        return;
-    }
-#endif
     msg->next = (Message *)freeMessages;
     freeMessages = msg;
 }
@@ -423,83 +406,6 @@ INLINE void freeMessageBuffer(Address addr) {
 }
 
 /**
- * Places a interrupt notification message in the server queue. This is called
- * from a low-level interrupt handler when an interrupt message is needed to be
- * sent to a Java device driver.
- *
- * @param msg a pointer to a statically allocated message data structure
- */
-INLINE void sendInterruptMessage(Message *msg) {
-    assumeInterruptsAreDisabled();
-    addMessage(msg, &toServerMessages);
-}
-
-#if KERNEL_SQUAWK
-/**
- *
- * This routine lets us keeps stats and perform final actions on
- * underlying devices once an interrupt is handled and the
- * device's connection is closed. See JavaDriverManager.java.
- *
- * In most cases, this will be the hand-shake that re-enables
- * the device's interrupts and enables it to enqueue the next
- * request.
- *
- * @param interruptNumber the interrupt id being handled
- * @param buffers         a pointer to MessageBuffer data: useful if this has been allocated
- */
-INLINE void interruptDone(int interruptNumber, Address buffers) {
-    void os_interruptDone(int interruptNumber);
-    os_interruptDone(interruptNumber);
-}
-#endif
-
-/**
- * Checks the message key to see if is an attempt to send a message to
- * an interrupt handler. If this is the case then the low-level interrupt
- * handler is called to inform it that the interrupt has been processed
- * and that its statically allocated message data structure can be reused.
- *
- * Recall that the model for interacting with devices is:
- *     - application opens "////dev-request" (or equivalent) passing in parameters
- *     - JavaDriverManager's loop processes the request sending data to the device
- *     - the device, on completion, sends an interrupt and a result is written back
- *          to the activeRequest
- *       - this is done by having the signal handler send its statically allocated
- *            (dummy) message to "////irq<nn>" and calling Squawk_kernelContinue()
- *            if we're not already in kernel-mode (see Squawk_enterKernel() for the
- *            protocol).
- *       - the last action of the processing of the message for "////irq<nn>" will
- *            call close on "con" with its dummy message and that is how we end up
- *            here.
- * Note that interrupts should be reenabled by interruptDone() and not by returning
- * out of the interrupt handler.
- *
- * Alternative view: sendMessage() is invoked as part of closing a connection.
- * We are checking to see if we need to pass an actual message or whether
- * we are closing a connection to a device (which is not expecting a message).
- * In the latter case, we instead call "interruptDone()"--for example,
- * to gather statistics--and return.
- *
- * The current naming convention is that device interrupts are labelled
- * "irq<nn>". This can be revisited but should be kept in sync with
- * JavaDriverManager.java.
- *
- * @param key a pointer to a Java string with the message key
- * @param buffers         a pointer to MessageBuffer data: useful if this has been allocated
- */
-INLINE boolean checkForDeviceInterrupt(Address key, Address buffers) {
-#if KERNEL_SQUAWK
-    if (isDeviceKey(key)) {
-        int interruptNumber = getInterruptNum(key);
-        interruptDone(interruptNumber, buffers);
-        return true;
-    }
-#endif
-    return false;
-}
-
-/**
  * Places a message in a message queue.
  *
  * @param key     a pointer to a Java string with the message key
@@ -510,22 +416,17 @@ INLINE boolean checkForDeviceInterrupt(Address key, Address buffers) {
  */
 INLINE void sendMessage(Address key, Address buffers, int status, Address *msgq, Address *waitq) {
     deferInterruptsAndDo(
-        if (checkForDeviceInterrupt(key, buffers) == false) {
-            Message *msg = allocateMessage(key);
-            if (msg == null) {
-                returnIntResult(ChannelConstants_RESULT_MALLOCFAILURE);
-            } else {
-                msg->status = status;
-                msg->data = buffers; // The list of buffers
-                addMessage(msg, msgq);
-                addMessageEvent(waitq, key);
-                returnIntResult(ChannelConstants_RESULT_OK);
-            }
-            returnAddressResult(null);
+        Message *msg = allocateMessage(key);
+        if (msg == null) {
+            returnIntResult(ChannelConstants_RESULT_MALLOCFAILURE);
         } else {
+            msg->status = status;
+            msg->data = buffers; // The list of buffers
+            addMessage(msg, msgq);
+            addMessageEvent(waitq, key);
             returnIntResult(ChannelConstants_RESULT_OK);
-            returnAddressResult(null);
         }
+        returnAddressResult(null);
     );
 }
 

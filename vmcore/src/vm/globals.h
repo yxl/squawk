@@ -67,10 +67,6 @@ typedef struct globalsStruct {
     int         _currentStream;              /* The currently selected stream */
     int         _internalLowResult;          /* Value for INTERNAL_LOW_RESULT */
 
-#if KERNEL_SQUAWK
-    /* Nothing yet... */
-#endif
-
     void*       _nativeFuncPtr;               /* Ptr to the function that is being called via NativeUnsafe.call, or null */
 
 #ifdef PROFILING
@@ -118,12 +114,7 @@ typedef struct globalsStruct {
 Globals *gp;              /* The pointer to the global execution context */
 Globals userGlobals;      /* The user mode execution context */
 
-#if KERNEL_SQUAWK
-Globals kernelGlobals;    /* The kernel mode execution context */
-#define defineGlobal(x) gp->_##x
-#else
 #define defineGlobal(x) userGlobals._##x
-#endif
 
 #define defineGlobalContext(c,x) c._##x
 
@@ -138,13 +129,6 @@ Address     messageEvents;              /* The list of message events that are r
 #endif /* OLD_IIC_MESSAGES */
 
 int         interruptsDisabled;         /* Depth-count:  for correct interrupt state changes */
-
-#if KERNEL_SQUAWK
-boolean     kernelMode;                 /* If true, kernel support for interrupts is enabled */
-int         kernelSignal;               /* Signal number used for entering kernel mode */
-int         kernelSignalCounter;        /* Count for number of signals received and not yet processed. */
-boolean     kernelSendNotify;           /* Control whether to notify potential (user) waiters on return */
-#endif /* KERNEL_SQUAWK */
 
 boolean     notrap;
 
@@ -181,10 +165,6 @@ boolean     notrap;
 #define Oops                                defineGlobal(Oops)
 #define Buffers                             defineGlobal(Buffers)
 #define BufferCount                         defineGlobal(BufferCount)
-
-#if KERNEL_SQUAWK
-    /* Nothing yet... */
-#endif
 
 #define cachedClassState                    defineGlobal(cachedClassState)
 #define cachedClass                         defineGlobal(cachedClass)

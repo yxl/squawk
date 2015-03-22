@@ -257,16 +257,6 @@ void cioExecute(void) {
 
         case ChannelConstants_INTERNAL_SEND_MESSAGE_TO_SERVER: {
             sendMessage(o1, o2, i1, &toServerMessages, &toServerWaiters);
-#if KERNEL_SQUAWK
-            /*
-             * We could use a special _TO_KERNEL type for messages
-             * to the driver's request url but this is simpler.
-             */
-            if (kernelMode && !inKernelMode()) {
-                void Squawk_enterKernel();
-                Squawk_enterKernel();
-            }
-#endif /* KERNEL_SQUAWK */
             break;
         }
 
@@ -324,13 +314,4 @@ void cioExecute(void) {
             ioExecute();
         }
     }
-}
-
-/**
- * Post an event to the channelIO subsystem to wake up any waiters.
- */
-static void cioPostEvent(void) {
-#if KERNEL_SQUAWK
-    ioPostEvent();
-#endif
 }
