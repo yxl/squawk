@@ -1,4 +1,3 @@
-//if[!FLASH_MEMORY]
 /*
  * Copyright 2004-2010 Sun Microsystems, Inc. All Rights Reserved.
  * Copyright 2011 Oracle Corporation. All Rights Reserved.

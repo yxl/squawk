@@ -315,7 +315,6 @@ public class GC implements GlobalStaticFields {
         arr[current.length] = om;
         readOnlyObjectMemories = arr;
 
-/*if[!FLASH_MEMORY]*/
         if (VM.isVeryVerbose()) {
             PrintStream out = null;
             try {
@@ -335,8 +334,6 @@ public class GC implements GlobalStaticFields {
                 }
             }
         }
-/*end[FLASH_MEMORY]*/
-
     }
 
     /**
@@ -1498,7 +1495,6 @@ public class GC implements GlobalStaticFields {
         /*
          * Write the symbol table entries.
          */
-/*if[!FLASH_MEMORY]*/
         if (isHosted || VM.isVerbose()) {
             Method method = body.getDefiningMethod();
             String name = method.toString();
@@ -1524,7 +1520,6 @@ public class GC implements GlobalStaticFields {
 
             VM.setStream(old);
         }
-/*end[FLASH_MEMORY]*/
         
         /*
          * Return the method object.

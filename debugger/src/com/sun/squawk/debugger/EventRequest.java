@@ -176,7 +176,6 @@ public abstract class EventRequest {
      */
     public static String getNameForJDWPEventKind(int eventKind) {
         switch (eventKind) {
-/*if[!FLASH_MEMORY]*/
             case JDWP.EventKind_SINGLE_STEP:        return "SINGLE_STEP";
             case JDWP.EventKind_BREAKPOINT:         return "BREAKPOINT";
             case JDWP.EventKind_FRAME_POP:          return "FRAME_POP";
@@ -195,7 +194,6 @@ public abstract class EventRequest {
             case JDWP.EventKind_VM_INIT:            return "VM_INIT";
             case JDWP.EventKind_VM_DEATH:           return "VM_DEATH";
             case JDWP.EventKind_VM_DISCONNECTED:    return "ISOLATE_DEATH";
-/*end[FLASH_MEMORY]*/
             default:                                return Integer.toString(eventKind);
         }
     }
@@ -208,11 +206,9 @@ public abstract class EventRequest {
      */
     public static String getNameForJDWPSuspendPolicy(int policy) {
         switch (policy) {
-/*if[!FLASH_MEMORY]*/
             case JDWP.SuspendPolicy_NONE:         return "NONE";
             case JDWP.SuspendPolicy_EVENT_THREAD: return "THREAD";
             case JDWP.SuspendPolicy_ALL:          return "ALL";
-/*end[FLASH_MEMORY]*/
             default:                              return Integer.toString(policy);
         }
     }

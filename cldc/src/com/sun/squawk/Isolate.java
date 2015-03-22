@@ -2002,7 +2002,6 @@ public final class Isolate implements Runnable {
 //        isolate.savedStackChunks = null;
 //        VM.registerIsolate(isolate);
 //
-///*if[!FLASH_MEMORY]*/
 //        if (VM.isVerbose()) {
 //            int old = VM.setStream(VM.STREAM_SYMBOLS);
 //            VM.print("UNHIBERNATED_ISOLATE.RELOCATION=");
@@ -2010,7 +2009,6 @@ public final class Isolate implements Runnable {
 //            VM.println();
 //            VM.setStream(old);
 //        }
-///*end[FLASH_MEMORY]*/
 //
 //        return isolate;
 //    }

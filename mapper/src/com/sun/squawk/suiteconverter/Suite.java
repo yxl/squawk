@@ -36,9 +36,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 //import com.sun.spot.peripheral.ConfigPage;
-/*if[SIMPLE_VERIFY_SIGNATURES]*/
-import com.sun.squawk.security.verifier.SignatureVerifier;
-/*end[SIMPLE_VERIFY_SIGNATURES]*/
 
 /**
  * Suite allows suite files to be saved in a form that can execute directly from flash memory.
@@ -178,13 +175,8 @@ public class Suite {
 	 * @throws IOException
 	 */
 	public void writeToStream(DataOutputStream dos) throws IOException {
-///*if[!SIMPLE_VERIFY_SIGNATURES]*/
         DataOutputStream output = dos;
         final int MAX_HEADER_SIZE = Integer.MAX_VALUE;
-///*else[SIMPLE_VERIFY_SIGNATURES]*/
-//      SigningOutputStream output = new SigningOutputStream(dos);
-//      final int MAX_HEADER_SIZE = SignatureVerifier.MAXIMUM_HEADER_SIZE;
-///*end[SIMPLE_VERIFY_SIGNATURES]*/
 
         if (hasParent()) {
             if (VM.isVerbose()) {
@@ -233,19 +225,7 @@ public class Suite {
         }
         output.write(objectMemory);
 
-///*if[!SIMPLE_VERIFY_SIGNATURES]*/
         output.flush();
-///*else[SIMPLE_VERIFY_SIGNATURES]*/
-//		if (hasParent())
-//		// If this is not the bootstrap suite write the hash
-//		// and sign the suite.
-//		{
-//			output.writeInt(getHash());
-//			output.flushAndAppendSignature();
-//		}else{
-//			output.flushWithoutSignature();
-//		}
-///*end[SIMPLE_VERIFY_SIGNATURES]*/
 	}
 
 	/**

@@ -311,9 +311,7 @@ public final class System {
         if (key.equals("microedition.platform"))                        { return "j2me"; }
 //      if (key.equals("microedition.profiles"))                        { return MIDlet.SUPPORTED_PROFILE; }
         if (key.equals("microedition.profiles"))                        { return "IMP-1.0"; }
-/*if[!FLASH_MEMORY]*/
         if (key.equals("awtcore.classbase"))                            { return "awtcore.impl.squawk"; }
-/*end[FLASH_MEMORY]*/
         if (key.equals("javax.microedition.io.Connector.protocolpath")) { return "com.sun.squawk.io"; }
         if (key.equals("file.separator"))	                            { return "" + VM.getFileSeparatorChar(); }
         if (key.equals("path.separator"))                               { return "" + VM.getPathSeparatorChar(); }

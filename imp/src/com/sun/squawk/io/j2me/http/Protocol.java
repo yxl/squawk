@@ -49,7 +49,6 @@ import com.sun.squawk.io.ConnectionBase;
  */
 public class Protocol extends ConnectionBase implements HttpConnection {
     
-/*if[!FLASH_MEMORY]*/
     /** Call using a full URL (remember to include the FILE part!"
      * > squawk com.sun.squawk.io.j2me.http.Protocol http://www.yahoo.com/index.html
      */
@@ -154,7 +153,6 @@ public class Protocol extends ConnectionBase implements HttpConnection {
             System.exit(1);
         }
     }
-/*end[FLASH_MEMORY]*/
 
     private static final String HTTP_PROXY_MANIFEST_PROPERTY = "com.sun.squawk.io.j2me.http.Protocol-HttpProxy";
     

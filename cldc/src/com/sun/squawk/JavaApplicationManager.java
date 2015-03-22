@@ -377,10 +377,6 @@ public class JavaApplicationManager {
 /*if[ENABLE_SUITE_LOADING]*/
         } else if(arg.startsWith("-suite:")) {
             parentSuiteURI = "file://" + arg.substring(7) + Suite.FILE_EXTENSION;
-/*if[FLASH_MEMORY]*/
-        } else if (arg.startsWith("-spotsuite:")) {
-            parentSuiteURI = arg.substring(1);
-/*end[FLASH_MEMORY]*/
         } else if (arg.startsWith("-suitepath:")) {
             String path = arg.substring("-suitepath:".length());
             ObjectMemoryLoader.setFilePath(path);
@@ -414,9 +410,6 @@ public class JavaApplicationManager {
 /*if[ENABLE_SUITE_LOADING]*/
                 "    -suite:<name>         suite name (without \"" + Suite.FILE_EXTENSION + "\") to load\n" +
                 "    -suitepath:<path>     host path to look for suites in\n" +
-/*if[FLASH_MEMORY]*/
-                "    -spotsuite:<name>     suite name (without \"" + Suite.FILE_EXTENSION + "\") to load\n" +
-/*end[FLASH_MEMORY]*/
 /*end[ENABLE_SUITE_LOADING]*/
                 "    -isolateinit:<class>  class whose main will be invoked on Isolate start, single arg \"true\" if first Isolate being initialized\n" +
                 "    -MIDlet-x             which MIDlet-x property to use from " + Suite.PROPERTIES_MANIFEST_RESOURCE_NAME + "\n" +

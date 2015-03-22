@@ -959,13 +959,6 @@ public class VM implements GlobalStaticFields {
 //    }
 /*end[ENABLE_MULTI_ISOLATE]*/
     
-/*if[FLASH_MEMORY]*/
-    /**
-	 * Address of the 64 bit millisecond counter
-	 */
-    private static Address timeAddr;
-/*end[FLASH_MEMORY]*/
-    
     /**
      * The squawk parameters specified on the command line (-Dfoo.bar=true).
      * Set by JavaApplicationManager
@@ -1711,11 +1704,7 @@ hbp.dumpState();
      * @return the current stream used for VM printing
      */
     public static int setStream(int stream) {
-/*if[FLASH_MEMORY]*/
-        Assert.always(stream >= STREAM_STDOUT && stream <= STREAM_STDERR); // "invalid stream specifier"
-/*else[FLASH_MEMORY]*/
-//        Assert.always(stream >= STREAM_STDOUT && stream <= STREAM_SYMBOLS); // "invalid stream specifier"
-/*end[FLASH_MEMORY]*/
+        Assert.always(stream >= STREAM_STDOUT && stream <= STREAM_SYMBOLS); // "invalid stream specifier"
         return setStream0(stream);
     }
 
@@ -2331,17 +2320,10 @@ hbp.dumpState();
     @Vm2c(proxy="sysTimeMillis")
 /*end[JAVA5SYNTAX]*/
     public static long getTimeMillisRaw() {
-/*if[!FLASH_MEMORY]*/
     	// Must get high word first as it causes the value to be setup that will be accessed via the INTERNAL_LOW_RESULT call
     	int high = execSyncIO(ChannelConstants.INTERNAL_GETTIMEMILLIS_HIGH, 0);
     	int low  = execSyncIO(ChannelConstants.INTERNAL_LOW_RESULT, 0);
     	return makeLong(high, low);
-/*else[FLASH_MEMORY]*/
-//    	if (timeAddr.isZero()) {
-//    		timeAddr = Address.fromPrimitive(execSyncIO(ChannelConstants.GET_CURRENT_TIME_ADDR, 0));
-//    	}
-//		return NativeUnsafe.getLong(timeAddr, 0);
-/*end[FLASH_MEMORY]*/
     }
     
     public static void setSystemClockMockInit(long newTime) {
@@ -2387,17 +2369,10 @@ hbp.dumpState();
     @Vm2c(proxy="sysTimeMillis")
 /*end[JAVA5SYNTAX]*/
     public static long getTimeMillis() {
-/*if[!FLASH_MEMORY]*/
     	// Must get high word first as it causes the value to be setup that will be accessed via the INTERNAL_LOW_RESULT call
     	int high = execSyncIO(ChannelConstants.INTERNAL_GETTIMEMILLIS_HIGH, 0);
     	int low  = execSyncIO(ChannelConstants.INTERNAL_LOW_RESULT, 0);
     	return makeLong(high, low);
-/*else[FLASH_MEMORY]*/
-//    	if (timeAddr.isZero()) {
-//    		timeAddr = Address.fromPrimitive(execSyncIO(ChannelConstants.GET_CURRENT_TIME_ADDR, 0));
-//    	}
-//		return NativeUnsafe.getLong(timeAddr, 0);
-/*end[FLASH_MEMORY]*/
     }
 /*else[DEBUG_CODE_ENABLED]*/
 //    public static long getTimeMillis() {
@@ -3768,59 +3743,6 @@ hbp.dumpState();
 //        }
 //    }
 /*end[ENABLE_CHANNEL_GUI]*/ 
-    
-/*if[FLASH_MEMORY]*/
-    /**
-     * Waits for an interrupt.
-     *
-     * @param irq   mask for interrupt
-     * @throws IOException
-     */
-    public static void waitForInterrupt(int irq) throws IOException {
-        executeCIO(0, ChannelConstants.IRQ_WAIT,0,irq,0,0,0,0,0,null,null);
-        int result = serviceResult();
-        if (result < 0) {
-            if (result == ChannelConstants.RESULT_EXCEPTION) {
-                raiseChannelException(0);
-            }
-            throw new IOException("Bad result from cioExecute "+ result);
-        } else if (result != ChannelConstants.RESULT_OK) {
-            VMThread.waitForEvent(result);
-        }
-    }
-
-    /**
-     * Wait until it's possible that we can go to deep sleep. It's possible if
-     * the thread scheduler has nothing to do for at least a certain length of time
-     *
-     * @param minimumDeepSleepTime the minimum time (in millis) that it's worth deep sleeping
-     *
-     * @return the target wake up time (in System clock millis) that we should return from deep sleep
-     */
-    public static long waitForDeepSleep(long minimumDeepSleepTime) {
-		int lowParam  = (int)minimumDeepSleepTime;
-		int highParam = (int)(minimumDeepSleepTime>>32);
-
-        executeCIO(0, ChannelConstants.WAIT_FOR_DEEP_SLEEP,0,highParam,lowParam,0,0,0,0,null,null);
-        int result = serviceResult();
-        VMThread.waitForEvent(result);
-
-        int highResult = execSyncIO(ChannelConstants.DEEP_SLEEP_TIME_MILLIS_HIGH, 0);
-        int lowResult  = execSyncIO(ChannelConstants.DEEP_SLEEP_TIME_MILLIS_LOW, 0);
-        return makeLong(highResult, lowResult);
-    }
-
-    /**
-     * Call the main method of the specified class
-     *
-     * @param className the name of the class whose main method is to be run
-     * @param args the arguments to be passed to the main method
-     * @throws ClassNotFoundException if the class is not found
-     */
-    public static void invokeMain(String className, String[] args) throws ClassNotFoundException {
-        Klass.forName(className).main(args);
-    }
-/*end[FLASH_MEMORY]*/
 
     /**
      * Mark the specified thread to be a daemon thread (won't prevent VM from exiting).

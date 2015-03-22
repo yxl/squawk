@@ -163,8 +163,6 @@
         <itemPath>src/vm/io_metal.c</itemPath>
         <itemPath>src/vm/io_metal.h</itemPath>
         <itemPath>src/vm/io_native.h</itemPath>
-        <itemPath>src/vm/io_socket.c</itemPath>
-        <itemPath>src/vm/ioserver.c</itemPath>
         <itemPath>src/vm/lisp2.c.spp</itemPath>
         <itemPath>src/vm/memory.c.spp</itemPath>
         <itemPath>src/vm/os_posix.c</itemPath>
@@ -683,8 +681,6 @@
       <item path="src/vm/io_metal.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/vm/io_native.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/vm/ioserver.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/lisp2.c.spp" ex="false" tool="0" flavor2="0">
       </item>

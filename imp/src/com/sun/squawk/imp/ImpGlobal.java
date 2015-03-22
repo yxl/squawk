@@ -66,11 +66,9 @@ public class ImpGlobal implements GlobalStaticFields {
     
     public synchronized static IRecordStoreManager getRecordStoreManager() throws RecordStoreException {
         if (recordStoreManager == null) {
-/*if[!FLASH_MEMORY]*/
             if (SimulatedNorFlashSectorAllocator.getSingleton().getInitialSectors(INorFlashSector.RMS_PURPOSED).length == 0) {
                 SimulatedNorFlashSectorAllocator.getSingleton().installSectors(16, 65536, INorFlashSector.RMS_PURPOSED);
             }
-/*end[FLASH_MEMORY]*/
             recordStoreManager = new RecordStoreManager(new NorFlashMemoryHeap(INorFlashSector.RMS_PURPOSED));
         }
         return recordStoreManager;

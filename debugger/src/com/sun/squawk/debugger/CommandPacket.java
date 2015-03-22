@@ -186,7 +186,6 @@ public final class CommandPacket extends Packet {
         command &= 0xff;
         String s = Integer.toString(set);
         String c = Integer.toString(command);
-/*if[!FLASH_MEMORY]*/
         switch (set) {
             case JDWP.VirtualMachine_COMMAND_SET: {
                 s = "VirtualMachine";
@@ -370,7 +369,6 @@ public final class CommandPacket extends Packet {
                 break;
             }
         }
-/*end[FLASH_MEMORY]*/
         return s + "." + c;
     }
 

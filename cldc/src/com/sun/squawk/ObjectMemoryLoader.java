@@ -31,10 +31,6 @@ import com.sun.squawk.pragma.HostedPragma;
 import com.sun.squawk.util.*;
 import com.sun.squawk.vm.ChannelConstants;
 import com.sun.squawk.vm.HDR;
-/*if[SIMPLE_VERIFY_SIGNATURES]*/
-import com.sun.squawk.security.verifier.SignatureVerifier;
-import com.sun.squawk.security.verifier.SignatureVerifierException;
-/*end[SIMPLE_VERIFY_SIGNATURES]*/
 
 /**
  * This class facilitates loading a serialized object graph from a URI
@@ -45,81 +41,7 @@ public abstract class ObjectMemoryLoader {
     public final static int SIMPLE_SIGNATURE    = 1;
     public final static int CHAINED_SIGNATURE   = 2;
     
-/*if[SIMPLE_VERIFY_SIGNATURES]*/
-    public final static int SIGNATURE_SCHEME    = SIMPLE_SIGNATURE;
-/*else[SIMPLE_VERIFY_SIGNATURES]*/
-///*if[CHAIN_VERIFY_SIGNATURES]*/
-//  public final static int SIGNATURE_SCHEME    = CHAINED_SIGNATURE;
-///*else[CHAIN_VERIFY_SIGNATURES]*/
-////  public final static int SIGNATURE_SCHEME    = NO_SIGNATURE;
-///*end[CHAIN_VERIFY_SIGNATURES]*/
-/*end[SIMPLE_VERIFY_SIGNATURES]*/
- 
-/*if[SIMPLE_VERIFY_SIGNATURES]*/
-    private static boolean signatureVerifierInitialised = false;
-    private static boolean noPublicKeyInstalled = false;
-    
-    private static byte[] getPublicKey() {
-		byte[] result = new byte[256];
-		int numberOfBytesRead = VM.execSyncIO(ChannelConstants.GET_PUBLIC_KEY, result.length, 0,0,0,0,0, result, null);
-		result = Arrays.copy(result, 0, numberOfBytesRead, 0, numberOfBytesRead);
-		return result;
-	}
-
-    // Can't be a static block, as we must only call this on SPOTs
-    private static void ensurePublicKeyInitialised() {
-        if (!VM.isHosted() && !signatureVerifierInitialised && !noPublicKeyInstalled) {
-            try {
-            	byte[] publicKeyBytes = getPublicKey();
-            	if (publicKeyBytes.length > 0) {
-            		SignatureVerifier.initialize(publicKeyBytes, 0, publicKeyBytes.length);
-            		signatureVerifierInitialised = true;
-            	} else {
-            		noPublicKeyInstalled = true;
-            	}
-           } catch (SignatureVerifierException e) {
-                throw new RuntimeException("Failed to initialize SignatureVerifier. " + e.getMessage());
-            }
-        }
-    }
-    
-    private static String signatureVerificationErrorMessage(String uri, Exception e) {
-        String signatureVerificationErrorMessage;
-        if (uri.endsWith("library")) {
-            signatureVerificationErrorMessage = "Signature verification of the library (" + uri + ") failed.\n"
-                    + "Use \"ant flashlibrary\" to reinstall the library from the same SDK used to flash the "
-                    + "current application. ";
-        } else {
-            signatureVerificationErrorMessage = "Signature verification of the application (" + uri + ") failed.\n"
-                    + "Use \"ant deploy\" to reinstall the application via USB.";
-        }
-        return signatureVerificationErrorMessage + ((VM.isVerbose()) ? ("\n\t" + e.getMessage()) : "");
-    }
-    
-    private static void verifySignatureOnLoad(String uri) {
-        ensurePublicKeyInitialised();
-
-        try {
-            InputStream suiteIn = Connector.openInputStream(uri);
-            try {
-                if (!SignatureVerifier.isVerifiedSuite(suiteIn) && !noPublicKeyInstalled) {
-                    if (VM.isVerbose()) {
-                        System.out.println("Verifying signature of suite (" + uri + ")");
-                    }
-                    SignatureVerifier.verifySuite(suiteIn);
-                } else {
-                    //System.out.println("NOT verifying suite with uri " + uri);
-                }
-            } catch (SignatureVerifierException e) {
-                throw new Error(signatureVerificationErrorMessage(uri, e));
-            } finally {
-                suiteIn.close();
-            }
-        } catch (IOException e) {
-            throw new Error(signatureVerificationErrorMessage(uri, e));
-        }
-    }
-/*end[SIMPLE_VERIFY_SIGNATURES]*/
+    public final static int SIGNATURE_SCHEME    = NO_SIGNATURE;
     
     /**
      * Calculates the hash of an array of bytes.
@@ -251,11 +173,7 @@ System.out.println("filePathelements=" + filePathelements);
      */
     private static ObjectMemoryFile load0(DataInputStream dis, String uri, boolean loadIntoReadOnlyMemory, boolean headerOnly) {
         ObjectMemoryLoader loader;
-/*if[FLASH_MEMORY]*/
-        loader = load0Flash(dis, uri, loadIntoReadOnlyMemory, headerOnly);
-/*else[FLASH_MEMORY]*/
-//      loader = load0Standard(dis, uri, loadIntoReadOnlyMemory, headerOnly);
-/*end[FLASH_MEMORY]*/
+        loader = load0Standard(dis, uri, loadIntoReadOnlyMemory, headerOnly);
         
         ObjectMemoryFile omf = loader.load(headerOnly);
 
@@ -270,25 +188,6 @@ System.out.println("filePathelements=" + filePathelements);
         }
         return omf;
     }
-    
-/*if[FLASH_MEMORY]*/
-    private static ObjectMemoryLoader load0Flash(DataInputStream dis, String uri, boolean loadIntoReadOnlyMemory, boolean headerOnly) {
-        if (!uri.startsWith("spotsuite:")) {
-            if (VM.isHosted()) {
-                return load0Hosted(dis, uri, loadIntoReadOnlyMemory, headerOnly);
-            } else {
-                throw new Error("URI is not a SPOT suite: " + uri);
-            }
-        }
-  
-/*if[SIMPLE_VERIFY_SIGNATURES]*/
-        verifySignatureOnLoad(uri);
-/*end[SIMPLE_VERIFY_SIGNATURES]*/
-        
-        ObjectMemoryReader reader = new FlashObjectMemoryReader(dis, uri);
-        return new FlashObjectMemoryLoader(reader, loadIntoReadOnlyMemory);
-    }
-/*end[FLASH_MEMORY]*/
    
     private static ObjectMemoryLoader load0Hosted(DataInputStream dis, String uri, boolean loadIntoReadOnlyMemory, boolean headerOnly) 
     throws HostedPragma {
@@ -611,14 +510,6 @@ System.out.println("filePathelements=" + filePathelements);
 
         if (parent.getHash() != hash) {
         	String helpText = "";
-/*if[FLASH_MEMORY]*/
-        	if ("spotsuite://library".equals(parent.getURI())) {
-        		helpText += "The application you are trying to run was not built against the library that is installed\n";
-        		helpText += "Either rebuild your application and re-deploy, or install the correct library\n";
-        	} else if ("memory:bootstrap".equals(parent.getURI())) {
-        		helpText += "The installed library was not built against the installed version of the Java VM\n";
-        	}
-/*end[FLASH_MEMORY]*/
             throw new Error(helpText + "invalid hash for parent (" + parent.getURI() + "): expected " + hash + ", received " + parent.getHash());
         }
         return parent;
