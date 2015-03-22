@@ -166,13 +166,11 @@
         <itemPath>src/vm/io_delegating.c</itemPath>
         <itemPath>src/vm/io_metal.c</itemPath>
         <itemPath>src/vm/io_metal.h</itemPath>
-        <itemPath>src/vm/io_native.c</itemPath>
         <itemPath>src/vm/io_native.h</itemPath>
         <itemPath>src/vm/io_socket.c</itemPath>
         <itemPath>src/vm/ioserver.c</itemPath>
         <itemPath>src/vm/lisp2.c.spp</itemPath>
         <itemPath>src/vm/memory.c.spp</itemPath>
-        <itemPath>src/vm/msg.c</itemPath>
         <itemPath>src/vm/os_posix.c</itemPath>
         <itemPath>src/vm/platform.h.spp</itemPath>
         <itemPath>src/vm/rom.h</itemPath>
@@ -695,8 +693,6 @@
       <item path="src/vm/lisp2.c.spp" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/memory.c.spp" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="src/vm/msg.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/vm/os_posix.c" ex="false" tool="0" flavor2="0">
       </item>

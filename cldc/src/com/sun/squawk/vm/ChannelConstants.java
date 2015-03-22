@@ -58,19 +58,6 @@ public final class ChannelConstants {
 //    public final static int CHANNEL_LAST_FIXED  = CHANNEL_GUIOUT;
 /*end[ENABLE_CHANNEL_GUI]*/
 
-/*if[!OLD_IIC_MESSAGES]*/
-/*else[OLD_IIC_MESSAGES]*/
-//    /**
-//     * The channel for message I/O.
-//     */
-//    public final static int CHANNEL_MESSAGEIO   = 4;
-//
-//    /**
-//     * The last fixed channel number.
-//     */
-//    public final static int CHANNEL_LAST_FIXED  = CHANNEL_MESSAGEIO;
-/*end[OLD_IIC_MESSAGES]*/
-
 /*if[!ENABLE_CHANNEL_GUI]*/
 /*else[ENABLE_CHANNEL_GUI]*/
 //    /**
@@ -412,19 +399,5 @@ public final class ChannelConstants {
         INTERNAL_COMPUTE_SHA1_FOR_MEMORY_REGION = 1021,
         INTERNAL_PRINTBYTES                     = 1022,
 
-/*if[OLD_IIC_MESSAGES]*/
-        /* Message I/O Operations */
-        INTERNAL_ALLOCATE_MESSAGE_BUFFER        = 1023,
-        INTERNAL_FREE_MESSAGE_BUFFER            = 1024,
-        INTERNAL_SEND_MESSAGE_TO_SERVER         = 1025,
-        INTERNAL_SEND_MESSAGE_TO_CLIENT         = 1026,
-        INTERNAL_RECEIVE_MESSAGE_FROM_SERVER    = 1027,
-        INTERNAL_RECEIVE_MESSAGE_FROM_CLIENT    = 1028,
-        INTERNAL_SEARCH_SERVER_HANDLERS         = 1029,
-        LAST_OPCODE                             = 1029;
-/*else[OLD_IIC_MESSAGES]*/
-//      LAST_OPCODE                             = 1022;
-/*end[OLD_IIC_MESSAGES]*/
-
-
+        LAST_OPCODE                             = 1022;
 }

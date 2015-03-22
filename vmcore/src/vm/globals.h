@@ -118,16 +118,6 @@ Globals userGlobals;      /* The user mode execution context */
 
 #define defineGlobalContext(c,x) c._##x
 
-#ifdef OLD_IIC_MESSAGES
-Address     freeMessages;               /* The pool of unused message structures */
-Address     freeMessageBuffers;         /* The pool of unused message buffers */
-Address     toServerMessages;           /* The list of active messages for server code */
-Address     toServerWaiters;            /* The list of threads waiting for server messages */
-Address     toClientMessages;           /* The list of active messages for client code */
-Address     toClientWaiters;            /* The list of threads waiting for client messages */
-Address     messageEvents;              /* The list of message events that are ready */
-#endif /* OLD_IIC_MESSAGES */
-
 int         interruptsDisabled;         /* Depth-count:  for correct interrupt state changes */
 
 boolean     notrap;

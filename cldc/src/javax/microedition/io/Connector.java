@@ -408,20 +408,4 @@ public class Connector {
             con.close();
         }
     }
-
-/*if[!OLD_IIC_MESSAGES]*/
-/*else[OLD_IIC_MESSAGES]*/
-///**
-// * This class exists so the above code will execute in a J2SE system where
-// * com.sun.squawk.io.j2me.msg.MessageResourceManager is not availible.
-// */
-//class MessageConector {
-//    /**
-//     * Allocates a client protocol object
-//     */
-//    public static ConnectionBase allocateClientProtocol() {
-//        return com.sun.squawk.io.j2me.msg.MessageResourceManager.allocateClientProtocol();
-//    }
-//}
-/*end[OLD_IIC_MESSAGES]*/
 }

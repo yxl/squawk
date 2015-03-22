@@ -71,13 +71,6 @@ INLINE void returnAddressResult(Address value) {
 #include "io_metal.c"
 #endif
 
-#ifdef OLD_IIC_MESSAGES
-/*
- * Include the message processing code.
- */
-#include "msg.c"
-#endif
-
 #if NATIVE_VERIFICATION
 #include "util/sha.h"
 #endif
@@ -239,61 +232,6 @@ void cioExecute(void) {
             stopVM(i1);
             break;
         }
-
-#ifdef OLD_IIC_MESSAGES
-        case ChannelConstants_INTERNAL_ALLOCATE_MESSAGE_BUFFER: {
-            deferInterruptsAndDo(
-                allocateMessageBuffer();
-            );
-            break;
-        }
-
-        case ChannelConstants_INTERNAL_FREE_MESSAGE_BUFFER: {
-            deferInterruptsAndDo(
-                freeMessageBuffer(o2);
-            );
-            break;
-        }
-
-        case ChannelConstants_INTERNAL_SEND_MESSAGE_TO_SERVER: {
-            sendMessage(o1, o2, i1, &toServerMessages, &toServerWaiters);
-            break;
-        }
-
-        case ChannelConstants_INTERNAL_RECEIVE_MESSAGE_FROM_CLIENT: {
-            receiveMessage(o1, &toServerMessages, &toServerWaiters);
-            break;
-        }
-
-        case ChannelConstants_INTERNAL_SEND_MESSAGE_TO_CLIENT: {
-            sendMessage(o1, o2, i1, &toClientMessages, &toClientWaiters);
-            break;
-        }
-
-        case ChannelConstants_INTERNAL_RECEIVE_MESSAGE_FROM_SERVER: {
-            receiveMessage(o1, &toClientMessages, &toClientWaiters);
-            break;
-        }
-
-        case ChannelConstants_INTERNAL_SEARCH_SERVER_HANDLERS: {
-            searchServerHandlers(o2);
-            break;
-        }
-
-        case ChannelConstants_GLOBAL_WAITFOREVENT: {
-            if (!checkForMessageEvent()) {
-                ioExecute();
-            }
-            break;
-        }
-
-        case ChannelConstants_GLOBAL_GETEVENT: {
-            if (!getMessageEvent()) {
-                ioExecute();
-            }
-            break;
-        }
-#endif /* OLD_IIC_MESSAGES */
 
         /* WARNING! NOT 64-bit safe! */
         case ChannelConstants_INTERNAL_NATIVE_PLATFORM_NAME: {

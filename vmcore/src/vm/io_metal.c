@@ -94,10 +94,6 @@ extern void setup_java_interrupts();
 int getEvent(int, int);
 static int check_irq(int irq_mask, int clear_flag);
 
-#ifdef OLD_IIC_MESSAGES
-INLINE boolean checkForMessageEvent();
-#endif
-
 /*
  * Java has requested wait for an interrupt. Store the request,
  * and each time Java asks for events, signal the event if the interrupt has happened
