@@ -783,14 +783,14 @@ INLINE_UNALIGNED void setUnalignedLong(Address base, Offset offset, jlong value)
                 /* optimize for 32-bit registers */
                 unsigned int hi = value >> 32;
                 unsigned int lo = value & 0xFFFFFFFF;
-                unsigned int b0 =  hi        & 0xFF;
-                unsigned int b1 = (hi >> 8)  & 0xFF;
-                unsigned int b2 = (hi >> 16) & 0xFF;
-                unsigned int b3 = (hi >> 24) & 0xFF;
-                unsigned int b4 = (lo >> 0) & 0xFF;
-                unsigned int b5 = (lo >> 8) & 0xFF;
-                unsigned int b6 = (lo >> 16) & 0xFF;
-                unsigned int b7 = (lo >> 24) & 0xFF;
+                unsigned int b0 =  lo        & 0xFF;
+                unsigned int b1 = (lo >> 8)  & 0xFF;
+                unsigned int b2 = (lo >> 16) & 0xFF;
+                unsigned int b3 = (lo >> 24) & 0xFF;
+                unsigned int b4 =  hi        & 0xFF;
+                unsigned int b5 = (hi >> 8)  & 0xFF;
+                unsigned int b6 = (hi >> 16) & 0xFF;
+                unsigned int b7 = (hi >> 24) & 0xFF;
                 if (PLATFORM_BIG_ENDIAN) {
                     setByteTyped(ea, 0, AddressType_ANY, (char)b7);
                     setByteTyped(ea, 1, AddressType_ANY, (char)b6);
