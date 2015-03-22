@@ -216,7 +216,7 @@ public abstract class Platform {
      * @return  true is the platform supports unaligned loads.
      */
     public boolean allowUnalignedLoads() {
-        return true;
+        return false;
     }
 
 
