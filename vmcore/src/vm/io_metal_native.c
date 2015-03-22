@@ -6,7 +6,7 @@
 #define SLEEP_MANAGER_ENABLED_IRQS 1
 
 void doShallowSleep(long long millis) {
-    sleep((millis - sysTimeMillis()) / 1000);
+    fprintf(stderr, "doShallowSleep not implemented\n");
 }
 
 void doDeepSleep(long long millis, int remain_powered) {

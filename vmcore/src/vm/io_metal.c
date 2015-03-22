@@ -52,16 +52,7 @@ static void setDeepSleepEventOutstanding(long long target) {
  * Sleep Squawk for specified milliseconds
  */
 void osMilliSleep(long long millisecondsToWait) {
-    long long target = ((long long) sysTimeMillis()) + millisecondsToWait;
-    if (target <= 0) {
-        target = 0x7FFFFFFFFFFFFFFFLL; // overflow detected
-    }
-    if ((millisecondsToWait < 0x7FFFFFFFFFFFFFFFLL) && deepSleepEnabled && 
-         !sleepManagerRunning && (millisecondsToWait >= minimumDeepSleepMillis)) {
-        setDeepSleepEventOutstanding(target);
-    } else {
-        doShallowSleep(target);
-    }
+    fprintf(stderr, "osMilliSleep not implemented\n");
 }
 
 /*
