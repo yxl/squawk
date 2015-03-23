@@ -112,10 +112,6 @@ public class Test {
         // Give the finalizers (if any) a chance to run
         VMThread.yield();
 
-        sortTest();
-        objectSortTest();
-        nestedObjectSortTest();
-
         VM.print("Finished tests\n");
         System.exit(12345);
     }
@@ -848,108 +844,6 @@ public class Test {
         VM.waitForEvent(3000);
         System.out.println("After sleep 3 seconds, time is: " + new java.util.Date());
 
-    }
-
-    static void sortTest() {
-        int[] data = new int[5000];
-        int times = 10;
-        long total = 0;
-        while (times-- > 0) {
-            long start = System.currentTimeMillis();
-            for (int i = 0; i < data.length; i++) {
-                data[i] = data.length - i;
-            }
-            doSort(data);
-            long time = System.currentTimeMillis() - start;
-            total += time;
-            System.out.println("Simple sort: " + time + "ms");
-        }
-        System.out.println("=== Average time: " + total / 10 + "ms");
-    }
-
-    static void doSort(int[] a) {
-        int t = 0;
-        for (int i = 0; i < a.length - 1; i++) {
-            for (int j = 0; j < i; j++) {
-                if (a[j] > a[j + 1]) {
-                    t = a[j];
-                    a[j] = a[j + 1];
-                    a[j + 1] = t;
-                }
-            }
-        }
-    }
-
-    static class T {
-        int v = 0;
-    }
-
-    static void objectSortTest() {
-        T[] data = new T[5000];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = new T();
-        }
-        int times = 10;
-        long total = 0;
-        while (times-- > 0) {
-            long start = System.currentTimeMillis();
-            for (int i = 0; i < data.length; i++) {
-                data[i].v = data.length - i;
-            }
-            doObjectSort(data);
-            long time = System.currentTimeMillis() - start;
-            total += time;
-            System.out.println("Object sort: " + time + "ms");
-        }
-        System.out.println("=== Average time: " + total / 10 + "ms");
-    }
-
-    static void doObjectSort(T[] a) {
-        for (int i = 0; i < a.length - 1; i++) {
-            for (int j = 0; j < i; j++) {
-                if (a[j].v > a[j + 1].v) {
-                    int t = a[j].v;
-                    a[j].v = a[j + 1].v;
-                    a[j + 1].v = t;
-                }
-            }
-        }
-    }
-
-    static class N {
-        T t = new T();
-    }
-
-    static void nestedObjectSortTest() {
-        N[] data = new N[5000];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = new N();
-        }
-        int times = 10;
-        long total = 0;
-        while (times-- > 0) {
-            long start = System.currentTimeMillis();
-            for (int i = 0; i < data.length; i++) {
-                data[i].t.v = data.length - i;
-            }
-            doNestedObjectSort(data);
-            long time = System.currentTimeMillis() - start;
-            total += time;
-            System.out.println("Nested object sort: " + time + "ms");
-        }
-        System.out.println("=== Average time: " + total / 10 + "ms");
-    }
-
-    static void doNestedObjectSort(N[] a) {
-        for (int i = 0; i < a.length - 1; i++) {
-            for (int j = 0; j < i; j++) {
-                if (a[j].t.v > a[j + 1].t.v) {
-                    int t = a[j].t.v;
-                    a[j].t.v = a[j + 1].t.v;
-                    a[j + 1].t.v = t;
-                }
-            }
-        }
     }
 
     private Test() {
