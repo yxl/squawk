@@ -141,6 +141,11 @@ public class Build {
     public String javaOptions = "";
 
     /**
+     * Optional argument to set the gcc compiler.
+     */
+    public String gcc = "gcc";
+
+    /**
      * The C compiler.
      */
     private CCompiler ccompiler;
@@ -2415,6 +2420,7 @@ public class Build {
         out.println("Usage: build [ build-options] [ target | command [ command_options ] ] ");
         out.println("where build-options include:");
         out.println();
+        out.println("    -gcc:<path>         set the gcc compiler.");
         out.println("    -jpda:<port>        start JVM listening for JPDA connection on 'port'");
         out.println("    -jmem:<mem>         java memory option shortcut for '-java:-Xmx<mem>'");
         out.println("    -java:<opts>        extra java options (e.g. '-java:-Xms128M')");
@@ -2708,6 +2714,8 @@ public class Build {
             } else if (arg.startsWith("-jpda:")) {
                 String port = arg.substring("-jpda:".length());
                 javaOptions += " -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + port;
+            } else if (arg.startsWith("-gcc:")) {
+                gcc = arg.substring("-gcc:".length());
             } else if (arg.startsWith("-jmem:")) {
                 String mem = arg.substring("-jmem:".length());
                 javaOptions += " -Xms" + mem + " -Xmx" + mem;

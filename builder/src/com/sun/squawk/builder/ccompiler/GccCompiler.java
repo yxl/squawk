@@ -194,7 +194,7 @@ public class GccCompiler extends CCompiler {
      */
     public File compile(File[] includeDirs, File source, File dir, boolean disableOpts) {
         File object = new File(dir, source.getName().replaceAll("\\.c", "\\.o"));
-        env.exec("gcc -c " +
+        env.exec(env.gcc + " -c " +
                  options(disableOpts) + " " +
                  include(includeDirs, "-I") +
                  " -o " + object + " " + source);
@@ -219,7 +219,7 @@ public class GccCompiler extends CCompiler {
             }
         }
         exec += " " + Build.join(objects) + " " + getLinkSuffix();
-        env.exec("gcc " + exec);
+        env.exec(env.gcc + " " + exec);
         return new File(output);
     }
 
